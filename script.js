@@ -1,4 +1,4 @@
-const password = 'te amo sam';
+const PASSWORD = 'te amo sam';
 
 const defaultPhrases = [
   'Te amo más de lo que las palabras pueden explicar.',
@@ -37,6 +37,8 @@ const photoGallery = document.getElementById('photoGallery');
 const videoInput = document.getElementById('videoInput');
 const videoGrid = document.getElementById('videoGrid');
 
+document.body.classList.add('no-scroll');
+
 function loadSavedNote() {
   const saved = localStorage.getItem(storageKeys.note);
   if (saved) noteArea.value = saved;
@@ -44,13 +46,13 @@ function loadSavedNote() {
 
 function saveNote() {
   localStorage.setItem(storageKeys.note, noteArea.value);
-  showFlash('Mensaje guardado con amor 💖');
+  flashMessage('Mensaje guardado con amor 💖');
 }
 
 function clearNote() {
   noteArea.value = '';
   localStorage.removeItem(storageKeys.note);
-  showFlash('Mensaje borrado ✨');
+  flashMessage('Mensaje borrado ✨');
 }
 
 function loadPhrases() {
@@ -65,6 +67,7 @@ function loadPhrases() {
 let phraseList = loadPhrases();
 
 function showRandomPhrase() {
+  if (!phraseList || !phraseList.length) return;
   const random = phraseList[Math.floor(Math.random() * phraseList.length)];
   phraseDisplay.textContent = random;
 }
@@ -72,7 +75,7 @@ function showRandomPhrase() {
 function saveCustomPhrase() {
   const value = customPhraseInput.value.trim();
   if (!value) {
-    showFlash('Escribe una frase antes de guardarla 💗');
+    flashMessage('Escribe una frase antes de guardarla 💗');
     return;
   }
 
@@ -80,10 +83,10 @@ function saveCustomPhrase() {
   localStorage.setItem(storageKeys.phrases, JSON.stringify(phraseList));
   customPhraseInput.value = '';
   showRandomPhrase();
-  showFlash('Frase guardada con cariño 💕');
+  flashMessage('Frase guardada con cariño 💕');
 }
 
-function showFlash(message) {
+function flashMessage(message) {
   const original = phraseDisplay.textContent;
   phraseDisplay.textContent = message;
   setTimeout(() => {
@@ -97,14 +100,22 @@ function handleLoginSubmit(event) {
   event.preventDefault();
   const typed = (passwordInput.value || '').trim().toLowerCase();
 
-  if (typed === password) {
+  if (typed === PASSWORD.toLowerCase()) {
+    loginError.textContent = '';
     loginOverlay.classList.add('hidden');
     app.classList.remove('hidden');
+    app.classList.add('visible');
+    document.body.classList.remove('no-scroll');
+    app.setAttribute('aria-hidden', 'false');
+    passwordInput.value = '';
     return;
   }
 
   loginError.textContent = 'Contraseña incorrecta. Intenta de nuevo.';
-  passwordInput.value = '';
+  loginForm.classList.remove('shake');
+  void loginForm.offsetWidth;
+  loginForm.classList.add('shake');
+  passwordInput.value = '');
 }
 
 function renderPhotos() {
@@ -138,11 +149,11 @@ function handlePhotoUpload(event) {
       const next = [...existing, ...images];
       localStorage.setItem(storageKeys.photos, JSON.stringify(next));
       renderPhotos();
-      showFlash('Fotos guardadas 💖');
+      flashMessage('Fotos guardadas 💖');
       photoInput.value = '';
     })
     .catch(() => {
-      showFlash('No se pudieron cargar las fotos 😕');
+      flashMessage('No se pudieron cargar las fotos 😕');
     });
 }
 
@@ -177,11 +188,11 @@ function handleVideoUpload(event) {
       const next = [...existing, ...videos];
       localStorage.setItem(storageKeys.videos, JSON.stringify(next));
       renderVideos();
-      showFlash('Videos guardados 🎬');
+      flashMessage('Videos guardados 🎬');
       videoInput.value = '';
     })
     .catch(() => {
-      showFlash('No se pudieron cargar los videos 😕');
+      flashMessage('No se pudieron cargar los videos 😕');
     });
 }
 
@@ -197,3 +208,4 @@ loadSavedNote();
 renderPhotos();
 renderVideos();
 showRandomPhrase();
+passwordInput.focus();

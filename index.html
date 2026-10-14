@@ -6,20 +6,22 @@
     <title>Te amo, Sam</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="login-overlay" id="loginOverlay">
-      <div class="login-card">
+    <div class="login-overlay" id="loginOverlay" role="dialog" aria-labelledby="loginTitle" aria-modal="true">
+      <div class="login-card" role="document">
         <p class="kicker">Clave secreta</p>
-        <h1>Te amo, Sam</h1>
+        <h1 id="loginTitle">Te amo, Sam</h1>
         <form id="loginForm">
           <input
             type="password"
             id="passwordInput"
             placeholder="Escribe la contraseña"
             autocomplete="off"
+            aria-label="Contraseña"
+            autofocus
           />
           <button type="submit">Entrar</button>
         </form>
@@ -27,111 +29,117 @@
       </div>
     </div>
 
-    <div class="app hidden" id="app">
+    <div class="app hidden" id="app" aria-hidden="true">
       <header class="hero">
-        <div class="heart heart-one"></div>
-        <div class="heart heart-two"></div>
-        <div class="sparkles"></div>
-        <div class="hero-content">
-          <p class="mini-label">Para la mujer más hermosa de mi vida</p>
-          <h2>Sam</h2>
-          <p class="hero-text">
-            Eres mi calma, mi alegría y mi razón para sonreír cada día. Este espacio es solo para ti.
-          </p>
+        <nav class="topbar">
+          <div class="brand">Sam</div>
+          <div class="nav-links">
+            <a href="#story">Historia</a>
+            <a href="#gallery">Fotos</a>
+            <a href="#letter">Carta</a>
+            <a href="#frases">Frases</a>
+            <a href="#videos">Videos</a>
+          </div>
+        </nav>
+
+        <div class="hero-inner">
+          <div class="hero-copy">
+            <span class="tag">Para ti, mi amor</span>
+            <h1>Sam</h1>
+            <p>
+              Eres mi paz, mi alegría y mi lugar favorito en este mundo. Este sitio es solo para ti.
+            </p>
+            <div class="hero-actions">
+              <a href="#letter" class="primary-btn">Leer mi carta</a>
+              <a href="#gallery" class="ghost-btn">Ver momentos</a>
+            </div>
+          </div>
+
+          <div class="hero-visual">
+            <div class="heart-box">
+              <div class="mini-badge">Te amo</div>
+              <div class="heart-center">❤</div>
+              <p>Hoy, mañana y siempre.</p>
+            </div>
+          </div>
         </div>
       </header>
 
-      <main class="container">
-        <div class="grid-2">
-          <section class="panel intro panel-pink">
-            <div class="panel-header">
-              <span class="badge">Mi amor</span>
-              <h3>Para ti, con todo mi cariño</h3>
-            </div>
-            <p>
-              En cada momento contigo siento que el mundo se pone más bonito. Eres mi persona favorita,
-              mi sueño favorito y mi hogar favorito. Gracias por ser tú.
-            </p>
-          </section>
+      <main class="page-shell">
+        <section class="panel story-panel" id="story">
+          <div class="section-title">
+            <span class="eyebrow">Nuestra historia</span>
+            <h2>¿Sabes por qué te amo tanto?</h2>
+          </div>
+          <p>
+            Porque contigo todo se siente más suave, más bonito y más lleno de sentido. Eres mi persona favorita,
+            mi mayor alegría y la razón por la que sonrío sin quererlo a veces.
+          </p>
+          <p>
+            Me encanta la forma en que haces que los días se sientan mejor. Gracias por ser tú, por estar conmigo,
+            por llenarme la vida con tu amor.
+          </p>
+        </section>
 
-          <section class="panel quote-panel panel-peach">
-            <div class="panel-header">
-              <span class="badge">Nuestro mundo</span>
-              <h3>Te amo y lo sabes</h3>
-            </div>
-            <blockquote>
-              “Cada segundo contigo se vuelve más hermoso, más suave y más lleno de amor.”
-            </blockquote>
-          </section>
-        </div>
+        <section class="panel gallery-panel" id="gallery">
+          <div class="section-title">
+            <span class="eyebrow">Fotos</span>
+            <h2>Momentos que llevo en mi corazón</h2>
+          </div>
 
-        <div class="grid-2">
-          <section class="panel gallery-panel panel-lilac">
-            <div class="panel-header">
-              <span class="badge">Fotos</span>
-              <h3>Momentos que me hacen feliz</h3>
-            </div>
+          <label class="upload-button" for="photoInput">Subir fotos</label>
+          <input id="photoInput" type="file" accept="image/*" multiple hidden />
+          <div class="gallery" id="photoGallery"></div>
+        </section>
 
-            <label class="upload-button" for="photoInput">Subir fotos</label>
-            <input id="photoInput" type="file" accept="image/*" multiple hidden />
-            <div class="gallery" id="photoGallery"></div>
-          </section>
+        <section class="panel letter-panel" id="letter">
+          <div class="section-title">
+            <span class="eyebrow">Carta</span>
+            <h2>Lo que quiero decirte</h2>
+          </div>
 
-          <section class="panel note-panel panel-rose">
-            <div class="panel-header">
-              <span class="badge">Carta</span>
-              <h3>Lo que quiero decirte</h3>
-            </div>
+          <textarea id="loveNote" rows="8" placeholder="Escribe todo lo que sientes..."></textarea>
+          <div class="button-row">
+            <button id="saveNoteBtn" class="primary-btn">Guardar mensaje</button>
+            <button id="clearNoteBtn" class="secondary-btn">Borrar</button>
+          </div>
+        </section>
 
-            <textarea
-              id="loveNote"
-              rows="8"
-              placeholder="Escribe todo lo que sientes..."
-            ></textarea>
-            <div class="button-row">
-              <button id="saveNoteBtn" class="primary-btn">Guardar mensaje</button>
-              <button id="clearNoteBtn" class="secondary-btn">Borrar</button>
-            </div>
-          </section>
-        </div>
+        <section class="panel phrase-panel" id="frases">
+          <div class="section-title">
+            <span class="eyebrow">Frases</span>
+            <h2>Una frase para tu corazón</h2>
+          </div>
 
-        <div class="grid-2">
-          <section class="panel phrase-panel panel-pink-strong">
-            <div class="panel-header">
-              <span class="badge">Frases</span>
-              <h3>Una frase para tu corazón</h3>
-            </div>
+          <div class="phrase-card" id="phraseDisplay">
+            Te amo más de lo que las palabras pueden explicar.
+          </div>
 
-            <div class="phrase-card" id="phraseDisplay">
-              Te amo más de lo que las palabras pueden explicar.
-            </div>
+          <div class="phrase-actions">
+            <button id="newPhraseBtn" class="primary-btn">Dame otra</button>
+            <button id="saveCustomPhraseBtn" class="secondary-btn">Guardar mi frase</button>
+          </div>
 
-            <div class="phrase-actions">
-              <button id="newPhraseBtn" class="primary-btn">Dame otra frase</button>
-              <button id="saveCustomPhraseBtn" class="secondary-btn">Guardar mi frase</button>
-            </div>
+          <div class="custom-phrase-box">
+            <input
+              id="customPhraseInput"
+              type="text"
+              maxlength="180"
+              placeholder="Escribe una frase que quieras guardar..."
+            />
+          </div>
+        </section>
 
-            <div class="custom-phrase-box">
-              <input
-                id="customPhraseInput"
-                type="text"
-                maxlength="180"
-                placeholder="Escribe una frase que quieras guardar..."
-              />
-            </div>
-          </section>
+        <section class="panel video-panel" id="videos">
+          <div class="section-title">
+            <span class="eyebrow">Videos</span>
+            <h2>Recuerdos en movimiento</h2>
+          </div>
 
-          <section class="panel video-panel panel-violet">
-            <div class="panel-header">
-              <span class="badge">Videos</span>
-              <h3>Recuerdos en movimiento</h3>
-            </div>
-
-            <label class="upload-button" for="videoInput">Subir videos</label>
-            <input id="videoInput" type="file" accept="video/*" multiple hidden />
-            <div class="video-grid" id="videoGrid"></div>
-          </section>
-        </div>
+          <label class="upload-button" for="videoInput">Subir videos</label>
+          <input id="videoInput" type="file" accept="video/*" multiple hidden />
+          <div class="video-grid" id="videoGrid"></div>
+        </section>
       </main>
     </div>
 
