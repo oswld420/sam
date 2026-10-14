@@ -31,6 +31,7 @@
       <header class="hero">
         <div class="heart heart-one"></div>
         <div class="heart heart-two"></div>
+        <div class="sparkles"></div>
         <div class="hero-content">
           <p class="mini-label">Para la mujer más hermosa de mi vida</p>
           <h2>Sam</h2>
@@ -41,82 +42,96 @@
       </header>
 
       <main class="container">
-        <section class="panel intro">
-          <div class="panel-header">
-            <span class="badge">Mi amor</span>
-            <h3>Para ti, con todo mi cariño</h3>
-          </div>
-          <p>
-            En cada momento contigo siento que el mundo se pone más bonito. Eres mi persona favorita,
-            mi sueño favorito y mi hogar favorito. Gracias por ser tú.
-          </p>
-        </section>
+        <div class="grid-2">
+          <section class="panel intro panel-pink">
+            <div class="panel-header">
+              <span class="badge">Mi amor</span>
+              <h3>Para ti, con todo mi cariño</h3>
+            </div>
+            <p>
+              En cada momento contigo siento que el mundo se pone más bonito. Eres mi persona favorita,
+              mi sueño favorito y mi hogar favorito. Gracias por ser tú.
+            </p>
+          </section>
 
-        <section class="panel gallery-panel">
-          <div class="panel-header">
-            <span class="badge">Fotos</span>
-            <h3>Momentos que me hacen feliz</h3>
-          </div>
+          <section class="panel quote-panel panel-peach">
+            <div class="panel-header">
+              <span class="badge">Nuestro mundo</span>
+              <h3>Te amo y lo sabes</h3>
+            </div>
+            <blockquote>
+              “Cada segundo contigo se vuelve más hermoso, más suave y más lleno de amor.”
+            </blockquote>
+          </section>
+        </div>
 
-          <label class="upload-button" for="photoInput">Subir fotos</label>
-          <input id="photoInput" type="file" accept="image/*" multiple hidden />
+        <div class="grid-2">
+          <section class="panel gallery-panel panel-lilac">
+            <div class="panel-header">
+              <span class="badge">Fotos</span>
+              <h3>Momentos que me hacen feliz</h3>
+            </div>
 
-          <div class="gallery" id="photoGallery"></div>
-        </section>
+            <label class="upload-button" for="photoInput">Subir fotos</label>
+            <input id="photoInput" type="file" accept="image/*" multiple hidden />
+            <div class="gallery" id="photoGallery"></div>
+          </section>
 
-        <section class="panel note-panel">
-          <div class="panel-header">
-            <span class="badge">Carta</span>
-            <h3>Lo que quiero decirte</h3>
-          </div>
+          <section class="panel note-panel panel-rose">
+            <div class="panel-header">
+              <span class="badge">Carta</span>
+              <h3>Lo que quiero decirte</h3>
+            </div>
 
-          <textarea
-            id="loveNote"
-            rows="8"
-            placeholder="Escribe todo lo que sientes..."
-          ></textarea>
-          <div class="button-row">
-            <button id="saveNoteBtn" class="primary-btn">Guardar mensaje</button>
-            <button id="clearNoteBtn" class="secondary-btn">Borrar</button>
-          </div>
-        </section>
+            <textarea
+              id="loveNote"
+              rows="8"
+              placeholder="Escribe todo lo que sientes..."
+            ></textarea>
+            <div class="button-row">
+              <button id="saveNoteBtn" class="primary-btn">Guardar mensaje</button>
+              <button id="clearNoteBtn" class="secondary-btn">Borrar</button>
+            </div>
+          </section>
+        </div>
 
-        <section class="panel phrase-panel">
-          <div class="panel-header">
-            <span class="badge">Frases</span>
-            <h3>Una frase para tu corazón</h3>
-          </div>
+        <div class="grid-2">
+          <section class="panel phrase-panel panel-pink-strong">
+            <div class="panel-header">
+              <span class="badge">Frases</span>
+              <h3>Una frase para tu corazón</h3>
+            </div>
 
-          <div class="phrase-card" id="phraseDisplay">
-            Te amo más de lo que las palabras pueden explicar.
-          </div>
+            <div class="phrase-card" id="phraseDisplay">
+              Te amo más de lo que las palabras pueden explicar.
+            </div>
 
-          <div class="phrase-actions">
-            <button id="newPhraseBtn" class="primary-btn">Dame otra frase</button>
-            <button id="saveCustomPhraseBtn" class="secondary-btn">Guardar mi frase</button>
-          </div>
+            <div class="phrase-actions">
+              <button id="newPhraseBtn" class="primary-btn">Dame otra frase</button>
+              <button id="saveCustomPhraseBtn" class="secondary-btn">Guardar mi frase</button>
+            </div>
 
-          <div class="custom-phrase-box">
-            <input
-              id="customPhraseInput"
-              type="text"
-              maxlength="180"
-              placeholder="Escribe una frase que quieras guardar..."
-            />
-          </div>
-        </section>
+            <div class="custom-phrase-box">
+              <input
+                id="customPhraseInput"
+                type="text"
+                maxlength="180"
+                placeholder="Escribe una frase que quieras guardar..."
+              />
+            </div>
+          </section>
 
-        <section class="panel video-panel">
-          <div class="panel-header">
-            <span class="badge">Videos</span>
-            <h3>Recuerdos en movimiento</h3>
-          </div>
+          <section class="panel video-panel panel-violet">
+            <div class="panel-header">
+              <span class="badge">Videos</span>
+              <h3>Recuerdos en movimiento</h3>
+            </div>
 
-          <label class="upload-button" for="videoInput">Subir videos</label>
-          <input id="videoInput" type="file" accept="video/*" multiple hidden />
-
-          <div class="video-grid" id="videoGrid"></div>
-        </section>
+            <label class="upload-button" for="videoInput">Subir videos</label>
+            <input id="videoInput" type="file" accept="video/*" multiple hidden />
+            <div class="video-grid" id="videoGrid"></div>
+          </section>
+        </div>
       </main>
     </div>
 
