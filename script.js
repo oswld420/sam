@@ -115,7 +115,7 @@ function handleLoginSubmit(event) {
   loginForm.classList.remove('shake');
   void loginForm.offsetWidth;
   loginForm.classList.add('shake');
-  passwordInput.value = '');
+  passwordInput.value = '';
 }
 
 function renderPhotos() {
