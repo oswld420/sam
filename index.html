@@ -45,6 +45,102 @@
   <script type="text/babel">
     const { useState, useEffect } = React;
 
+    // Sintetizador de audio romántico con soporte para archivo MP3 local
+    class RomanticAudioPlayer {
+      constructor() {
+        this.ctx = null;
+        this.isPlaying = false;
+        this.timer = null;
+        this.audioElement = null;
+        this.songUrl = localStorage.getItem('sam_song_url') || 'musica/cancion.mp3';
+        this.notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 523.25, 587.33, 659.25];
+        this.sequence = [[0, 2, 4, 6], [3, 5, 7, 8], [5, 0, 2, 4], [3, 1, 4, 6]];
+        this.seqIndex = 0;
+        this.noteIndex = 0;
+        this.initAudioElement(this.songUrl);
+      }
+      initAudioElement(url) {
+        if (this.audioElement) {
+          this.audioElement.pause();
+          this.audioElement = null;
+        }
+        this.songUrl = url;
+        if (url) {
+          this.audioElement = new Audio(url);
+          this.audioElement.loop = true;
+          this.audioElement.volume = 0.75;
+        }
+      }
+      initSynth() {
+        if (!this.ctx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContextClass();
+          this.gain = this.ctx.createGain();
+          this.gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+          this.gain.connect(this.ctx.destination);
+        }
+      }
+      playTone(freq, time) {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const oscHarmonic = this.ctx.createOscillator();
+        const noteGain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, time);
+        oscHarmonic.type = 'triangle';
+        oscHarmonic.frequency.setValueAtTime(freq * 2, time);
+        noteGain.gain.setValueAtTime(0.001, time);
+        noteGain.gain.exponentialRampToValueAtTime(0.35, time + 0.04);
+        noteGain.gain.exponentialRampToValueAtTime(0.0001, time + 2.2);
+        osc.connect(noteGain);
+        oscHarmonic.connect(noteGain);
+        noteGain.connect(this.gain);
+        osc.start(time);
+        oscHarmonic.start(time);
+        osc.stop(time + 2.3);
+        oscHarmonic.stop(time + 2.3);
+      }
+      toggle() {
+        if (this.isPlaying) { this.pause(); return false; }
+        else { this.play(); return true; }
+      }
+      play() {
+        this.isPlaying = true;
+        if (this.audioElement && this.songUrl) {
+          this.audioElement.play().catch(e => {
+            console.warn('Audio local no encontrado, usando respaldo suave', e);
+            this.playSynth();
+          });
+          return;
+        }
+        this.playSynth();
+      }
+      playSynth() {
+        this.initSynth();
+        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+        const tick = () => {
+          if (!this.isPlaying || !this.ctx) return;
+          const currentChord = this.sequence[this.seqIndex];
+          const noteOffset = currentChord[this.noteIndex % currentChord.length];
+          const freq = this.notes[noteOffset % this.notes.length];
+          this.playTone(freq, this.ctx.currentTime);
+          this.noteIndex++;
+          if (this.noteIndex % currentChord.length === 0) {
+            this.seqIndex = (this.seqIndex + 1) % this.sequence.length;
+          }
+          this.timer = setTimeout(tick, 520);
+        };
+        tick();
+      }
+      pause() {
+        this.isPlaying = false;
+        if (this.audioElement) this.audioElement.pause();
+        if (this.timer) clearTimeout(this.timer);
+      }
+    }
+
+    const audioPlayer = new RomanticAudioPlayer();
+
     const INITIAL_LETTERS = [
       {
         id: '1',
@@ -94,7 +190,6 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
       { id: '10', text: 'Un recordatorio rápido por si se te olvidaba: ¡Eres la persona más hermosa del universo entero!', tag: 'Mimos' }
     ];
 
-    // Rutas relativas a fotos guardadas en tu repositorio (con respaldo por si no las has subido aún)
     const INITIAL_PHOTOS = [
       {
         id: '1',
@@ -165,9 +260,12 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
         const saved = localStorage.getItem('sam_videos');
         return saved ? JSON.parse(saved) : INITIAL_VIDEOS;
       });
-      const [anniversaryDate, setAnniversaryDate] = useState(() => {
-        return localStorage.getItem('sam_anniversary') || '2024-02-14';
-      });
+
+      // "¿Me extrañas?" estado
+      const [missCount, setMissCount] = useState(() => parseInt(localStorage.getItem('sam_miss_count') || '0', 10));
+      const [isSendingMiss, setIsSendingMiss] = useState(false);
+      const [missFeedback, setMissFeedback] = useState(false);
+      const [heartFillLevel, setHeartFillLevel] = useState(() => Math.min(100, (parseInt(localStorage.getItem('sam_miss_count') || '0', 10)) * 20));
 
       const [selectedLetter, setSelectedLetter] = useState(null);
       const [isWriteLetterOpen, setIsWriteLetterOpen] = useState(false);
@@ -177,6 +275,8 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
       const [isUploadPhotoOpen, setIsUploadPhotoOpen] = useState(false);
       const [selectedVideo, setSelectedVideo] = useState(videos[0]);
       const [isUploadVideoOpen, setIsUploadVideoOpen] = useState(false);
+      const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
+      const [customSongPath, setCustomSongPath] = useState(() => localStorage.getItem('sam_song_url') || 'musica/cancion.mp3');
 
       const [newLetterTitle, setNewLetterTitle] = useState('');
       const [newLetterCategory, setNewLetterCategory] = useState('romantica');
@@ -194,22 +294,44 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
       const [newVideoUrl, setNewVideoUrl] = useState('');
       const [newVideoCaption, setNewVideoCaption] = useState('');
 
-      const [timeTogether, setTimeTogether] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      // Función cuando Sam hace clic en "¿Me extrañas?"
+      const handleMissClick = async () => {
+        if (isSendingMiss) return;
+        const newCount = missCount + 1;
+        setMissCount(newCount);
+        localStorage.setItem('sam_miss_count', newCount);
+        setHeartFillLevel(Math.min(100, heartFillLevel + 25));
 
-      useEffect(() => {
-        const timer = setInterval(() => {
-          const start = new Date(anniversaryDate).getTime();
-          const now = new Date().getTime();
-          const diff = Math.max(0, now - start);
-          setTimeTogether({
-            days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-            hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
-            minutes: Math.floor((diff / (1000 * 60)) % 60),
-            seconds: Math.floor((diff / 1000) % 60)
+        confetti({
+          particleCount: 60,
+          spread: 70,
+          origin: { y: 0.65 },
+          colors: ['#F43F5E', '#FB7185', '#FDA4AF', '#FFE4E6', '#E11D48']
+        });
+
+        setIsSendingMiss(true);
+
+        try {
+          // Envía correo en segundo plano a tu email automáticamente
+          await fetch('https://formsubmit.co/ajax/oswaldohernandezordonez7@gmail.com', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({
+              _subject: '💌 ¡Sam te extraña! (Alerta de Amor desde su página)',
+              Mensaje: '¡Hola Oswaldo! Sam acaba de picarle al botón en su página: "¡Sí, te extraño mucho! ❤️"',
+              Hora: new Date().toLocaleTimeString('es-ES'),
+              Fecha: new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+              Veces: `Esta es la vez #${newCount} que Sam te envía amor desde la página.`
+            })
           });
-        }, 1000);
-        return () => clearInterval(timer);
-      }, [anniversaryDate]);
+        } catch (e) {
+          console.warn(e);
+        } finally {
+          setIsSendingMiss(false);
+          setMissFeedback(true);
+          setTimeout(() => setMissFeedback(false), 4500);
+        }
+      };
 
       const handleLogin = (e) => {
         e.preventDefault();
@@ -231,6 +353,11 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
       const handleLock = () => {
         sessionStorage.removeItem('sam_unlocked');
         setUnlocked(false);
+      };
+
+      const toggleMusic = () => {
+        const status = audioPlayer.toggle();
+        setIsMusicPlaying(status);
       };
 
       const pullQuoteFromJar = () => {
@@ -336,18 +463,24 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                 <span className="text-rose-500 text-lg">❤️</span>
               </a>
               <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-neutral-600">
-                <a href="#historia" className="hover:text-rose-600">Historia</a>
                 <a href="#cartas" className="hover:text-rose-600">Cartas</a>
                 <a href="#frasco" className="hover:text-rose-600">Frasco de Frases</a>
                 <a href="#fotos" className="hover:text-rose-600">Fotos</a>
                 <a href="#videos" className="hover:text-rose-600">Videos</a>
               </nav>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setIsMusicPlaying(!isMusicPlaying)}
+                  onClick={toggleMusic}
                   className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${isMusicPlaying ? 'bg-rose-500 text-white animate-pulse' : 'bg-stone-100 text-stone-700'}`}
                 >
-                  {isMusicPlaying ? '🎶 Sonando Te Amo y Más' : '🎵 Poner Nuestra Canción'}
+                  {isMusicPlaying ? '🎵 Música On' : '🔇 Música'}
+                </button>
+                <button
+                  onClick={() => setIsAudioModalOpen(true)}
+                  className="rounded-lg border border-rose-200 bg-white p-1.5 text-xs text-neutral-600 hover:bg-rose-50"
+                  title="Configurar ruta del archivo de audio"
+                >
+                  ⚙️
                 </button>
                 <button
                   onClick={handleLock}
@@ -359,33 +492,6 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
             </div>
           </header>
 
-          {/* Disco Flotante para Te Amo y Mas */}
-          {isMusicPlaying && (
-            <div className="fixed bottom-4 right-4 z-50 flex items-center gap-3 rounded-full border border-rose-200 bg-white/95 py-2 px-4 shadow-xl backdrop-blur-md">
-              <span className="text-xl animate-spin" style={{ animationDuration: '3s' }}>💿</span>
-              <div className="text-left pr-2">
-                <p className="text-xs font-semibold text-neutral-800 line-clamp-1">Te amo y más (El Libro de la Vida)</p>
-                <p className="text-[10px] text-rose-500">Nuestra canción para Sam ❤️</p>
-              </div>
-              <button
-                onClick={() => setIsMusicPlaying(false)}
-                className="rounded-full bg-rose-50 p-1 text-xs text-rose-600 hover:bg-rose-100"
-                title="Pausar"
-              >
-                ⏸️
-              </button>
-              <div className="hidden">
-                <iframe
-                  width="100"
-                  height="100"
-                  src="https://www.youtube.com/embed/QAItMep0GiA?autoplay=1&loop=1&playlist=QAItMep0GiA&enablejsapi=1"
-                  title="YouTube audio"
-                  allow="autoplay"
-                />
-              </div>
-            </div>
-          )}
-
           <main className="flex-1">
             <section id="inicio" className="pt-12 pb-16 px-4 text-center max-w-4xl mx-auto">
               <p className="font-script text-3xl text-rose-500 mb-2">Un amor que dura para siempre</p>
@@ -396,31 +502,55 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                 Bienvenida a tu rinconcito virtual, creado con todo mi corazón para recordarte lo mucho que te amo hoy, mañana y siempre.
               </p>
 
-              <div id="historia" className="mx-auto max-w-2xl rounded-2xl border border-rose-200 bg-white/80 p-6 shadow-sm">
-                <div className="flex items-center justify-between pb-3 mb-4 border-b border-rose-100 text-xs text-rose-700 font-medium">
-                  <span>📅 Tiempo caminando juntos</span>
-                  <input
-                    type="date"
-                    value={anniversaryDate}
-                    onChange={(e) => {
-                      setAnniversaryDate(e.target.value);
-                      localStorage.setItem('sam_anniversary', e.target.value);
-                    }}
-                    className="rounded border border-rose-200 px-2 py-0.5 text-xs text-neutral-700"
-                  />
+              {/* Card interactiva ¿Me extrañas? con envío de correo automático */}
+              <div className="mx-auto max-w-xl rounded-3xl border border-rose-200 bg-white/90 p-8 shadow-lg backdrop-blur-md relative overflow-hidden">
+                <p className="font-script text-2xl text-rose-500 mb-1">Pensando en ti</p>
+                <h2 className="font-romantic text-2xl sm:text-3xl font-bold text-neutral-900 mb-2">
+                  ¿Me extrañas así como yo a ti?
+                </h2>
+                <p className="text-xs sm:text-sm text-neutral-600 font-light max-w-md mx-auto mb-6">
+                  Si en este momento estás pensando en mí, dale clic al corazón. Se llenará con tu amor y me enviará un aviso en automático diciendo que me extrañas 💕
+                </p>
+
+                <div className="flex flex-col items-center justify-center my-4">
+                  <button
+                    type="button"
+                    onClick={handleMissClick}
+                    disabled={isSendingMiss}
+                    className="relative h-28 w-28 rounded-full flex items-center justify-center transition-all shadow-md hover:shadow-xl hover:scale-105 active:scale-95 bg-gradient-to-br from-rose-50 to-pink-100"
+                    title="Haz clic si me extrañas"
+                  >
+                    <div
+                      className="absolute inset-0 rounded-full bg-rose-400 opacity-20 transition-all duration-700"
+                      style={{ height: `${Math.max(15, heartFillLevel)}%`, top: 'auto', bottom: 0 }}
+                    />
+                    <span className="text-5xl transform transition-transform hover:scale-110">
+                      {heartFillLevel > 0 ? '❤️' : '🤍'}
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleMissClick}
+                    disabled={isSendingMiss}
+                    className="mt-4 rounded-xl bg-gradient-to-r from-rose-500 via-rose-600 to-rose-700 px-6 py-2.5 text-xs font-semibold text-white shadow-md hover:scale-105 active:scale-95 transition-all"
+                  >
+                    {isSendingMiss ? 'Enviando aviso de amor...' : '¡Sí, te extraño mucho! ❤️'}
+                  </button>
                 </div>
-                <div className="grid grid-cols-4 gap-3 text-center">
-                  <div className="rounded-xl bg-rose-50 p-3"><span className="block font-mono text-3xl font-bold text-rose-600">{timeTogether.days}</span><span className="text-xs text-neutral-500">Días</span></div>
-                  <div className="rounded-xl bg-rose-50 p-3"><span className="block font-mono text-3xl font-bold text-rose-600">{timeTogether.hours}</span><span className="text-xs text-neutral-500">Horas</span></div>
-                  <div className="rounded-xl bg-rose-50 p-3"><span className="block font-mono text-3xl font-bold text-rose-600">{timeTogether.minutes}</span><span className="text-xs text-neutral-500">Minutos</span></div>
-                  <div className="rounded-xl bg-rose-50 p-3"><span className="block font-mono text-3xl font-bold text-rose-600">{timeTogether.seconds}</span><span className="text-xs text-neutral-500">Segundos</span></div>
+
+                {missFeedback && (
+                  <div className="mt-4 rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs text-rose-800">
+                    💌 <strong>¡Aviso enviado a mi correo!</strong> Ya sé que me estás extrañando y te mando un abrazo fuertísimo 💕
+                  </div>
+                )}
+
+                <div className="mt-5 pt-4 border-t border-rose-100 flex items-center justify-between text-xs text-neutral-500">
+                  <span>Amor enviado:</span>
+                  <span className="font-semibold text-rose-600">
+                    {missCount === 0 ? '¡Sé la primera en picarle hoy!' : `Me has extrañado ${missCount} ${missCount === 1 ? 'vez' : 'veces'} 💕`}
+                  </span>
                 </div>
-                <button
-                  onClick={() => confetti({ particleCount: 70, spread: 70, colors: ['#F43F5E', '#FB7185', '#FDA4AF'] })}
-                  className="mt-5 rounded-xl bg-gradient-to-r from-rose-500 to-rose-600 px-4 py-2 text-xs font-semibold text-white shadow hover:from-rose-600 hover:to-rose-700"
-                >
-                  ❤️ Lluvia de amor
-                </button>
               </div>
             </section>
 
@@ -596,6 +726,41 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
             </section>
           </main>
 
+          {/* Modal Audio Config */}
+          {isAudioModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setIsAudioModalOpen(false)}>
+              <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-rose-100" onClick={e => e.stopPropagation()}>
+                <h3 className="font-romantic text-2xl font-bold text-neutral-900 mb-3">Audio de la Canción</h3>
+                <p className="text-xs text-neutral-600 mb-4">
+                  Coloca tu archivo MP3 en tu repositorio de GitHub dentro de una carpeta llamada <code>musica</code> (por ejemplo <code>musica/cancion.mp3</code>).
+                </p>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  localStorage.setItem('sam_song_url', customSongPath);
+                  audioPlayer.initAudioElement(customSongPath);
+                  audioPlayer.play();
+                  setIsMusicPlaying(true);
+                  setIsAudioModalOpen(false);
+                }} className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-neutral-700 mb-1">Ruta del audio en el repositorio</label>
+                    <input
+                      type="text"
+                      value={customSongPath}
+                      onChange={e => setCustomSongPath(e.target.value)}
+                      placeholder="musica/cancion.mp3 o cancion.mp3"
+                      className="w-full rounded-lg border border-neutral-200 p-2 text-xs focus:outline-none"
+                    />
+                  </div>
+                  <div className="flex justify-end gap-2 pt-2">
+                    <button type="button" onClick={() => setIsAudioModalOpen(false)} className="rounded-lg px-3 py-1.5 text-xs text-neutral-600">Cancelar</button>
+                    <button type="submit" className="rounded-lg bg-rose-600 px-4 py-1.5 text-xs font-semibold text-white">Guardar y Probar</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
           {currentQuoteNote && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setCurrentQuoteNote(null)}>
               <div className="w-full max-w-md rounded-2xl letter-paper p-8 shadow-2xl border-2 border-rose-200 text-center" onClick={e => e.stopPropagation()}>
@@ -735,7 +900,6 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
             </div>
           )}
 
-          {/* Modal Photo Upload con soporte para rutas relativas fotos/... */}
           {isUploadPhotoOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setIsUploadPhotoOpen(false)}>
               <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-rose-100" onClick={e => e.stopPropagation()}>
@@ -802,7 +966,6 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
             </div>
           )}
 
-          {/* Modal Video Upload con soporte para rutas relativas videos/... */}
           {isUploadVideoOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setIsUploadVideoOpen(false)}>
               <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-rose-100" onClick={e => e.stopPropagation()}>
