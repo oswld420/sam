@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <!-- Canvas Confetti CDN -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
-  <!-- React & ReactDOM & Babel para ejecución directa -->
+  <!-- React & ReactDOM & Babel para ejecucion autonoma en navegador -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -37,41 +37,55 @@
     .jar-glow {
       box-shadow: 0 0 35px rgba(254, 205, 211, 0.6), inset 0 0 25px rgba(255, 255, 255, 0.6);
     }
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(2deg); }
+    }
+    .animate-float {
+      animation: floatSlow 4s ease-in-out infinite;
+    }
   </style>
 </head>
 <body class="bg-[#FAF7F5] text-[#2C1810] antialiased selection:bg-rose-200 selection:text-rose-900">
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useEffect } = React;
+    const { useState, useEffect, useRef } = React;
 
-    // Sintetizador de audio romántico con soporte para archivo MP3 local
-    class RomanticAudioPlayer {
+    // Sintetizador de audio romántico estilo cajita musical
+    class RomanticAudioSynth {
       constructor() {
         this.ctx = null;
         this.isPlaying = false;
         this.timer = null;
-        this.audioElement = null;
-        this.songUrl = localStorage.getItem('sam_song_url') || 'musica/cancion.mp3';
+        this.customAudio = null;
+        this.customUrl = localStorage.getItem('sam_song_url') || null;
         this.notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 523.25, 587.33, 659.25];
-        this.sequence = [[0, 2, 4, 6], [3, 5, 7, 8], [5, 0, 2, 4], [3, 1, 4, 6]];
+        this.sequence = [
+          [0, 2, 4, 6],
+          [3, 5, 7, 8],
+          [5, 0, 2, 4],
+          [3, 1, 4, 6]
+        ];
         this.seqIndex = 0;
         this.noteIndex = 0;
-        this.initAudioElement(this.songUrl);
-      }
-      initAudioElement(url) {
-        if (this.audioElement) {
-          this.audioElement.pause();
-          this.audioElement = null;
+        if (this.customUrl) {
+          this.setCustomSong(this.customUrl);
         }
-        this.songUrl = url;
+      }
+      setCustomSong(url) {
+        if (this.customAudio) {
+          this.customAudio.pause();
+          this.customAudio = null;
+        }
+        this.customUrl = url;
         if (url) {
-          this.audioElement = new Audio(url);
-          this.audioElement.loop = true;
-          this.audioElement.volume = 0.75;
+          this.customAudio = new Audio(url);
+          this.customAudio.loop = true;
+          this.customAudio.volume = 0.7;
         }
       }
-      initSynth() {
+      init() {
         if (!this.ctx) {
           const AudioContextClass = window.AudioContext || window.webkitAudioContext;
           this.ctx = new AudioContextClass();
@@ -85,41 +99,47 @@
         const osc = this.ctx.createOscillator();
         const oscHarmonic = this.ctx.createOscillator();
         const noteGain = this.ctx.createGain();
+
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, time);
         oscHarmonic.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, time);
         oscHarmonic.frequency.setValueAtTime(freq * 2, time);
-        noteGain.gain.setValueAtTime(0.001, time);
-        noteGain.gain.exponentialRampToValueAtTime(0.35, time + 0.04);
-        noteGain.gain.exponentialRampToValueAtTime(0.0001, time + 2.2);
+
+        noteGain.gain.setValueAtTime(0, time);
+        noteGain.gain.linearRampToValueAtTime(0.2, time + 0.04);
+        noteGain.gain.exponentialRampToValueAtTime(0.001, time + 1.6);
+
         osc.connect(noteGain);
         oscHarmonic.connect(noteGain);
         noteGain.connect(this.gain);
+
         osc.start(time);
         oscHarmonic.start(time);
-        osc.stop(time + 2.3);
-        oscHarmonic.stop(time + 2.3);
+        osc.stop(time + 1.6);
+        oscHarmonic.stop(time + 1.6);
       }
       toggle() {
-        if (this.isPlaying) { this.pause(); return false; }
-        else { this.play(); return true; }
+        if (this.isPlaying) {
+          this.pause();
+          return false;
+        } else {
+          this.play();
+          return true;
+        }
       }
       play() {
-        this.isPlaying = true;
-        if (this.audioElement && this.songUrl) {
-          this.audioElement.play().catch(e => {
-            console.warn('Audio local no encontrado, usando respaldo suave', e);
-            this.playSynth();
-          });
+        if (this.customAudio) {
+          this.customAudio.play().catch(e => console.warn(e));
+          this.isPlaying = true;
           return;
         }
-        this.playSynth();
-      }
-      playSynth() {
-        this.initSynth();
-        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+        this.init();
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+        this.isPlaying = true;
         const tick = () => {
-          if (!this.isPlaying || !this.ctx) return;
+          if (!this.isPlaying) return;
           const currentChord = this.sequence[this.seqIndex];
           const noteOffset = currentChord[this.noteIndex % currentChord.length];
           const freq = this.notes[noteOffset % this.notes.length];
@@ -134,13 +154,14 @@
       }
       pause() {
         this.isPlaying = false;
-        if (this.audioElement) this.audioElement.pause();
+        if (this.customAudio) this.customAudio.pause();
         if (this.timer) clearTimeout(this.timer);
       }
     }
 
-    const audioPlayer = new RomanticAudioPlayer();
+    const audioSynth = new RomanticAudioSynth();
 
+    // Datos por defecto
     const INITIAL_LETTERS = [
       {
         id: '1',
@@ -193,24 +214,21 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
     const INITIAL_PHOTOS = [
       {
         id: '1',
-        url: 'fotos/foto1.jpg',
-        fallbackUrl: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80',
+        url: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80',
         caption: 'Nuestras manos entrelazadas: el lugar perfecto donde pertenezco.',
         date: 'Un atardecer contigo',
         location: 'Nuestro rincón favorito'
       },
       {
         id: '2',
-        url: 'fotos/foto2.jpg',
-        fallbackUrl: 'https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&w=800&q=80',
+        url: 'https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&w=800&q=80',
         caption: 'Todas las flores del mundo no se comparan con tu belleza, mi Sam.',
         date: 'Detalles que te mereces',
         location: 'De mí para ti'
       },
       {
         id: '3',
-        url: 'fotos/foto3.jpg',
-        fallbackUrl: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80',
+        url: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80',
         caption: 'Bajo el cielo estrellado soñando despierto con nuestro futuro juntos.',
         date: 'Noche mágica',
         location: 'Juntos'
@@ -224,60 +242,53 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
         url: 'https://www.youtube.com/embed/QAItMep0GiA',
         caption: '“Te amo y más de lo que puedes imaginar, te amo además como nunca nadie jamás te amará...” Nuestra canción para ti, Sam ❤️',
         date: 'Nuestra Canción Especial',
-        type: 'embed'
-      },
-      {
-        id: '2',
-        title: 'Nuestros Momentos Juntos',
-        url: 'videos/video1.mp4',
-        fallbackUrl: 'https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-couple-under-the-sun-41398-large.mp4',
-        caption: 'Un vistazo a la magia que sentimos cuando estamos juntos.',
-        date: 'Recuerdo grabado',
-        type: 'url'
+        duration: 'YouTube'
       }
     ];
 
     function App() {
+      // Estado de desbloqueo
       const [unlocked, setUnlocked] = useState(() => sessionStorage.getItem('sam_unlocked') === 'true');
       const [passwordInput, setPasswordInput] = useState('');
       const [passwordError, setPasswordError] = useState('');
       const [showPassword, setShowPassword] = useState(false);
-      const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
+      // Datos principales con persistencia en localStorage
       const [letters, setLetters] = useState(() => {
-        const saved = localStorage.getItem('sam_letters');
-        return saved ? JSON.parse(saved) : INITIAL_LETTERS;
+        try {
+          const saved = localStorage.getItem('sam_letters');
+          return saved ? JSON.parse(saved) : INITIAL_LETTERS;
+        } catch(e) { return INITIAL_LETTERS; }
       });
       const [quotes, setQuotes] = useState(() => {
-        const saved = localStorage.getItem('sam_quotes');
-        return saved ? JSON.parse(saved) : INITIAL_QUOTES;
+        try {
+          const saved = localStorage.getItem('sam_quotes');
+          return saved ? JSON.parse(saved) : INITIAL_QUOTES;
+        } catch(e) { return INITIAL_QUOTES; }
       });
       const [photos, setPhotos] = useState(() => {
-        const saved = localStorage.getItem('sam_photos');
-        return saved ? JSON.parse(saved) : INITIAL_PHOTOS;
+        try {
+          const saved = localStorage.getItem('sam_photos');
+          return saved ? JSON.parse(saved) : INITIAL_PHOTOS;
+        } catch(e) { return INITIAL_PHOTOS; }
       });
       const [videos, setVideos] = useState(() => {
-        const saved = localStorage.getItem('sam_videos');
-        return saved ? JSON.parse(saved) : INITIAL_VIDEOS;
+        try {
+          const saved = localStorage.getItem('sam_videos');
+          return saved ? JSON.parse(saved) : INITIAL_VIDEOS;
+        } catch(e) { return INITIAL_VIDEOS; }
       });
 
-      // "¿Me extrañas?" estado
-      const [missCount, setMissCount] = useState(() => parseInt(localStorage.getItem('sam_miss_count') || '0', 10));
-      const [isSendingMiss, setIsSendingMiss] = useState(false);
-      const [missFeedback, setMissFeedback] = useState(false);
-      const [heartFillLevel, setHeartFillLevel] = useState(() => Math.min(100, (parseInt(localStorage.getItem('sam_miss_count') || '0', 10)) * 20));
-
+      // Modales y estados de visualización
       const [selectedLetter, setSelectedLetter] = useState(null);
       const [isWriteLetterOpen, setIsWriteLetterOpen] = useState(false);
+      const [isAddQuoteOpen, setIsAddQuoteOpen] = useState(false);
+      const [isAddPhotoOpen, setIsAddPhotoOpen] = useState(false);
+      const [isAddVideoOpen, setIsAddVideoOpen] = useState(false);
       const [currentQuoteNote, setCurrentQuoteNote] = useState(null);
-      const [isManageQuotesOpen, setIsManageQuotesOpen] = useState(false);
-      const [activePhoto, setActivePhoto] = useState(null);
-      const [isUploadPhotoOpen, setIsUploadPhotoOpen] = useState(false);
-      const [selectedVideo, setSelectedVideo] = useState(videos[0]);
-      const [isUploadVideoOpen, setIsUploadVideoOpen] = useState(false);
-      const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
-      const [customSongPath, setCustomSongPath] = useState(() => localStorage.getItem('sam_song_url') || 'musica/cancion.mp3');
+      const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
+      // Formularios
       const [newLetterTitle, setNewLetterTitle] = useState('');
       const [newLetterCategory, setNewLetterCategory] = useState('romantica');
       const [newLetterContent, setNewLetterContent] = useState('');
@@ -294,33 +305,34 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
       const [newVideoUrl, setNewVideoUrl] = useState('');
       const [newVideoCaption, setNewVideoCaption] = useState('');
 
-      // Función cuando Sam hace clic en "¿Me extrañas?"
+      // 1. Estado de "¿Me extrañas?"
+      const [missCount, setMissCount] = useState(() => parseInt(localStorage.getItem('sam_miss_count') || '0', 10));
+      const [isSendingMiss, setIsSendingMiss] = useState(false);
+      const [missFeedback, setMissFeedback] = useState(false);
+      const [heartFillLevel, setHeartFillLevel] = useState(() => Math.min(100, (parseInt(localStorage.getItem('sam_miss_count') || '0', 10)) * 20));
+
       const handleMissClick = async () => {
         if (isSendingMiss) return;
         const newCount = missCount + 1;
         setMissCount(newCount);
         localStorage.setItem('sam_miss_count', newCount);
         setHeartFillLevel(Math.min(100, heartFillLevel + 25));
-
         confetti({
           particleCount: 60,
           spread: 70,
           origin: { y: 0.65 },
           colors: ['#F43F5E', '#FB7185', '#FDA4AF', '#FFE4E6', '#E11D48']
         });
-
         setIsSendingMiss(true);
-
         try {
-          // Envía correo en segundo plano a tu email automáticamente
           await fetch('https://formsubmit.co/ajax/oswaldohernandezordonez7@gmail.com', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify({
               _subject: '💌 ¡Sam te extraña! (Alerta de Amor desde su página)',
-              Mensaje: '¡Hola Oswaldo! Sam acaba de picarle al botón en su página: "¡Sí, te extraño mucho! ❤️"',
+              Mensaje: '¡Hola! Sam acaba de picarle al botón en su página: "Sí te extraño así como tú a mí ❤️"',
               Hora: new Date().toLocaleTimeString('es-ES'),
-              Fecha: new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+              Fecha: new Date().toLocaleDateString('es-ES'),
               Veces: `Esta es la vez #${newCount} que Sam te envía amor desde la página.`
             })
           });
@@ -333,6 +345,69 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
         }
       };
 
+      // 2. NUEVO ESTADO: Mensaje personalizado de Sam directo al correo
+      const [samMessage, setSamMessage] = useState('');
+      const [samMood, setSamMood] = useState('❤️ Te amo mucho');
+      const [isSendingSamMsg, setIsSendingSamMsg] = useState(false);
+      const [samMsgFeedback, setSamMsgFeedback] = useState(false);
+      const [sentNotes, setSentNotes] = useState(() => {
+        try {
+          return JSON.parse(localStorage.getItem('sam_sent_notes') || '[]');
+        } catch (e) {
+          return [];
+        }
+      });
+
+      const handleSendSamMessage = async (e) => {
+        if (e) e.preventDefault();
+        if (!samMessage.trim()) return;
+
+        setIsSendingSamMsg(true);
+        const noteObj = {
+          id: Date.now().toString(),
+          text: samMessage.trim(),
+          mood: samMood,
+          date: new Date().toLocaleDateString('es-ES'),
+          time: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+        };
+
+        try {
+          await fetch('https://formsubmit.co/ajax/oswaldohernandezordonez7@gmail.com', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({
+              _subject: `💌 ¡Nuevo mensajito de Sam! [${samMood}]`,
+              De: 'Sam (Tu amor) 💕',
+              Emocion_o_Tema: samMood,
+              Mensaje_de_Sam: samMessage.trim(),
+              Fecha: noteObj.date,
+              Hora: noteObj.time
+            })
+          });
+
+          const updatedNotes = [noteObj, ...sentNotes];
+          setSentNotes(updatedNotes);
+          localStorage.setItem('sam_sent_notes', JSON.stringify(updatedNotes));
+          setSamMessage('');
+          setSamMsgFeedback(true);
+
+          confetti({
+            particleCount: 75,
+            spread: 80,
+            origin: { y: 0.6 },
+            colors: ['#F43F5E', '#FB7185', '#FDA4AF', '#FFE4E6', '#E11D48']
+          });
+
+          setTimeout(() => setSamMsgFeedback(false), 6500);
+        } catch (err) {
+          console.warn(err);
+          setSamMsgFeedback(true);
+        } finally {
+          setIsSendingSamMsg(false);
+        }
+      };
+
+      // Verificación de contraseña
       const handleLogin = (e) => {
         e.preventDefault();
         const clean = passwordInput.toLowerCase().trim().replace(/[.,!¡¿?]/g, '').replace(/\s+/g, ' ');
@@ -355,11 +430,6 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
         setUnlocked(false);
       };
 
-      const toggleMusic = () => {
-        const status = audioPlayer.toggle();
-        setIsMusicPlaying(status);
-      };
-
       const pullQuoteFromJar = () => {
         if (!quotes.length) return;
         confetti({
@@ -372,6 +442,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
         setCurrentQuoteNote(randomQ);
       };
 
+      // Guardar datos
       const saveAndSetLetters = (arr) => {
         setLetters(arr);
         localStorage.setItem('sam_letters', JSON.stringify(arr));
@@ -389,6 +460,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
         localStorage.setItem('sam_videos', JSON.stringify(arr));
       };
 
+      // Pantalla de bloqueo si no está desbloqueado
       if (!unlocked) {
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[#FFF5F5] via-[#FFF0F3] to-[#FFE4E6] p-4">
@@ -456,6 +528,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
 
       return (
         <div className="min-h-screen bg-[#FAF7F5] flex flex-col">
+          {/* Barra Superior */}
           <header className="sticky top-0 z-40 w-full border-b border-rose-100 bg-[#FAF7F5]/90 backdrop-blur-md">
             <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-8 px-4 sm:px-6">
               <a href="#inicio" className="font-romantic text-2xl font-bold tracking-tight text-neutral-900 flex items-center gap-1.5">
@@ -463,24 +536,18 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                 <span className="text-rose-500 text-lg">❤️</span>
               </a>
               <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-neutral-600">
+                <a href="#inicio" className="hover:text-rose-600">Inicio</a>
                 <a href="#cartas" className="hover:text-rose-600">Cartas</a>
                 <a href="#frasco" className="hover:text-rose-600">Frasco de Frases</a>
                 <a href="#fotos" className="hover:text-rose-600">Fotos</a>
                 <a href="#videos" className="hover:text-rose-600">Videos</a>
               </nav>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <button
-                  onClick={toggleMusic}
+                  onClick={() => setIsMusicPlaying(!isMusicPlaying)}
                   className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${isMusicPlaying ? 'bg-rose-500 text-white animate-pulse' : 'bg-stone-100 text-stone-700'}`}
                 >
-                  {isMusicPlaying ? '🎵 Música On' : '🔇 Música'}
-                </button>
-                <button
-                  onClick={() => setIsAudioModalOpen(true)}
-                  className="rounded-lg border border-rose-200 bg-white p-1.5 text-xs text-neutral-600 hover:bg-rose-50"
-                  title="Configurar ruta del archivo de audio"
-                >
-                  ⚙️
+                  {isMusicPlaying ? '🎶 Sonando Te Amo y Más' : '🎵 Poner Nuestra Canción'}
                 </button>
                 <button
                   onClick={handleLock}
@@ -492,17 +559,46 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
             </div>
           </header>
 
+          {/* Reproductor Flotante */}
+          {isMusicPlaying && (
+            <div className="fixed bottom-4 right-4 z-50 flex items-center gap-3 rounded-full border border-rose-200 bg-white/95 py-2 px-4 shadow-xl backdrop-blur-md">
+              <span className="text-xl animate-spin" style={{ animationDuration: '3s' }}>💿</span>
+              <div className="text-left pr-2">
+                <p className="text-xs font-semibold text-neutral-800 line-clamp-1">Te amo y más (El Libro de la Vida)</p>
+                <p className="text-[10px] text-rose-500">Nuestra canción para Sam ❤️</p>
+              </div>
+              <button
+                onClick={() => setIsMusicPlaying(false)}
+                className="rounded-full bg-rose-50 p-1 text-xs text-rose-600 hover:bg-rose-100"
+                title="Pausar"
+              >
+                ⏸️
+              </button>
+              <div className="hidden">
+                <iframe
+                  width="100"
+                  height="100"
+                  src="https://www.youtube.com/embed/QAItMep0GiA?autoplay=1&loop=1&playlist=QAItMep0GiA&enablejsapi=1"
+                  title="YouTube audio"
+                  allow="autoplay"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* CONTENIDO PRINCIPAL */}
           <main className="flex-1">
+            {/* HERO SECTION */}
             <section id="inicio" className="pt-12 pb-16 px-4 text-center max-w-4xl mx-auto">
               <p className="font-script text-3xl text-rose-500 mb-2">Un amor que dura para siempre</p>
-              <h1 className="font-romantic text-4xl sm:text-6xl font-bold tracking-tight text-neutral-900 mb-4">
+              <h1 className="font-romantic text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-neutral-900 leading-tight mb-4">
                 Cada instante a tu lado es mi regalo favorito, Sam
               </h1>
               <p className="text-neutral-600 max-w-2xl mx-auto text-base sm:text-lg mb-10 font-light">
                 Bienvenida a tu rinconcito virtual, creado con todo mi corazón para recordarte lo mucho que te amo hoy, mañana y siempre.
               </p>
 
-              {/* Card interactiva ¿Me extrañas? con envío de correo automático */}
+              {/* 1. Card interactiva: ¿Me extrañas? */}
               <div className="mx-auto max-w-xl rounded-3xl border border-rose-200 bg-white/90 p-8 shadow-lg backdrop-blur-md relative overflow-hidden">
                 <p className="font-script text-2xl text-rose-500 mb-1">Pensando en ti</p>
                 <h2 className="font-romantic text-2xl sm:text-3xl font-bold text-neutral-900 mb-2">
@@ -533,7 +629,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                     type="button"
                     onClick={handleMissClick}
                     disabled={isSendingMiss}
-                    className="mt-4 rounded-xl bg-gradient-to-r from-rose-500 via-rose-600 to-rose-700 px-6 py-2.5 text-xs font-semibold text-white shadow-md hover:scale-105 active:scale-95 transition-all"
+                    className="mt-4 rounded-xl bg-gradient-to-r from-rose-500 via-rose-600 to-rose-700 px-6 py-2.5 text-xs font-semibold text-white shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer"
                   >
                     {isSendingMiss ? 'Enviando aviso de amor...' : '¡Sí, te extraño mucho! ❤️'}
                   </button>
@@ -552,8 +648,133 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                   </span>
                 </div>
               </div>
+
+              {/* 2. NUEVO APARTADO: Buzón de mensajes de Sam al correo */}
+              <div className="mx-auto mt-8 max-w-xl rounded-3xl border border-rose-200 bg-white/95 p-7 sm:p-8 shadow-lg backdrop-blur-md relative overflow-hidden text-left">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-script text-2xl text-rose-500">Buzón de amor</span>
+                  <span className="text-xs bg-rose-50 text-rose-600 px-3 py-1 rounded-full font-medium border border-rose-100 flex items-center gap-1">
+                    <span>💌</span> Llega a mi correo
+                  </span>
+                </div>
+
+                <h2 className="font-romantic text-2xl sm:text-3xl font-bold text-neutral-900 mb-2">
+                  Escríbeme algo que quieras decirme hoy
+                </h2>
+                <p className="text-xs sm:text-sm text-neutral-600 font-light mb-5">
+                  Escribe lo que sientes, lo que te pasó hoy o lo que quieras compartir conmigo. Cuando le des a enviar, me llegará en automático a mi correo personal para leerlo de inmediato 💕
+                </p>
+
+                <form onSubmit={handleSendSamMessage} className="space-y-4">
+                  {/* Selector de animo / tema rapido */}
+                  <div>
+                    <label className="block text-xs font-semibold text-neutral-500 mb-2 uppercase tracking-wider">
+                      ¿Cómo te sientes o de qué trata tu mensaje?
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        '❤️ Te amo mucho',
+                        '🥺 Te extraño',
+                        '🥰 Tengo algo que contarte',
+                        '✨ Pensando en ti',
+                        '💋 Un besito sorpresa',
+                        '🧸 Necesito un abrazo'
+                      ].map((moodOption) => (
+                        <button
+                          key={moodOption}
+                          type="button"
+                          onClick={() => setSamMood(moodOption)}
+                          className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all cursor-pointer ${
+                            samMood === moodOption
+                              ? 'bg-rose-500 text-white shadow-sm scale-105 font-semibold'
+                              : 'bg-rose-50 text-neutral-700 hover:bg-rose-100 border border-rose-100'
+                          }`}
+                        >
+                          {moodOption}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Area de texto del mensaje */}
+                  <div>
+                    <label className="block text-xs font-semibold text-neutral-500 mb-1.5 uppercase tracking-wider">
+                      Tu mensaje para mí:
+                    </label>
+                    <textarea
+                      rows={4}
+                      value={samMessage}
+                      onChange={(e) => setSamMessage(e.target.value)}
+                      placeholder="Escribe aquí lo que sientas, Sam... Prometo leerlo y sonreír al instante ❤️"
+                      className="w-full rounded-2xl border border-rose-200 bg-[#FCFBF9] p-4 text-sm text-neutral-800 placeholder-neutral-400 focus:border-rose-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-200 transition-all resize-none font-light leading-relaxed"
+                      required
+                    />
+                  </div>
+
+                  {/* Boton de envio */}
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
+                    <p className="text-[11px] text-neutral-400 italic">
+                      Llegará a: oswaldohernandezordonez7@gmail.com
+                    </p>
+                    <button
+                      type="submit"
+                      disabled={isSendingSamMsg || !samMessage.trim()}
+                      className="w-full sm:w-auto rounded-xl bg-gradient-to-r from-rose-500 via-rose-600 to-rose-700 px-6 py-3 text-xs font-semibold text-white shadow-md hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      {isSendingSamMsg ? (
+                        <>
+                          <span className="animate-spin text-sm">⏳</span>
+                          <span>Enviando tu mensajito...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Enviar a mi correo</span>
+                          <span>💌</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+
+                {/* Confirmacion de envio exitoso */}
+                {samMsgFeedback && (
+                  <div className="mt-4 rounded-2xl bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-200 p-4 text-xs text-rose-900 shadow-sm animate-pulse">
+                    <div className="flex items-start gap-2.5">
+                      <span className="text-xl">💌</span>
+                      <div>
+                        <p className="font-bold text-rose-800 text-sm mb-0.5">¡Tu mensaje ya va en camino!</p>
+                        <p className="text-rose-700">
+                          Se ha enviado directo a mi correo electrónico. Lo voy a leer con una sonrisa gigante y te responderé con todo mi amor 💕
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Historial de notitas enviadas */}
+                {sentNotes.length > 0 && (
+                  <div className="mt-6 pt-5 border-t border-rose-100">
+                    <div className="flex items-center justify-between text-xs text-neutral-500 mb-3">
+                      <span className="font-semibold text-neutral-700">Tus últimos mensajitos enviados:</span>
+                      <span className="text-[11px] text-rose-500 font-medium">{sentNotes.length} enviados</span>
+                    </div>
+                    <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
+                      {sentNotes.slice(0, 3).map((note) => (
+                        <div key={note.id} className="rounded-xl bg-rose-50/60 border border-rose-100 p-2.5 text-xs text-neutral-700">
+                          <div className="flex items-center justify-between text-[10px] text-neutral-400 mb-1">
+                            <span className="font-medium text-rose-600">{note.mood}</span>
+                            <span>{note.date} - {note.time}</span>
+                          </div>
+                          <p className="text-neutral-800 italic line-clamp-2">"{note.text}"</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </section>
 
+            {/* SECCIÓN DE CARTAS */}
             <section id="cartas" className="py-16 px-4 max-w-6xl mx-auto border-t border-rose-100">
               <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
                 <div>
@@ -587,13 +808,13 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (confirm('¿Eliminar esta carta?')) {
+                          if (confirm('¿Deseas eliminar esta carta?')) {
                             saveAndSetLetters(letters.filter(l => l.id !== lettr.id));
                           }
                         }}
-                        className="text-neutral-300 hover:text-red-500"
+                        className="text-neutral-400 hover:text-red-500 text-[11px]"
                       >
-                        🗑️
+                        Eliminar
                       </button>
                     </div>
                   </article>
@@ -601,484 +822,432 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
               </div>
             </section>
 
-            <section id="frasco" className="py-16 px-4 bg-gradient-to-b from-white/60 to-rose-50/40 border-t border-rose-100 text-center">
-              <div className="max-w-4xl mx-auto">
-                <p className="font-script text-2xl text-rose-500 mb-1">Un frasco lleno de motivos para sonreír</p>
-                <h2 className="font-romantic text-3xl sm:text-4xl font-bold text-neutral-900 mb-2">El Frasco de Frases para Sam</h2>
-                <p className="text-sm text-neutral-600 mb-8 font-light">
-                  Cada vez que piques el botón, saldrá un papelito mágico con una frase de amor aleatoria.
+            {/* SECCIÓN DEL FRASCO DE FRASES */}
+            <section id="frasco" className="py-16 px-4 bg-gradient-to-b from-white to-[#FFF5F5] border-t border-rose-100">
+              <div className="max-w-4xl mx-auto text-center">
+                <p className="font-script text-2xl text-rose-500 mb-1">Un detalle para cada día</p>
+                <h2 className="font-romantic text-3xl sm:text-4xl font-bold text-neutral-900 mb-3">El Frasco de Amor para Sam</h2>
+                <p className="text-sm text-neutral-600 font-light max-w-lg mx-auto mb-8">
+                  Toca el frasco mágico para sacar una frase llena de cariño pensada especialmente para ti.
                 </p>
 
-                <div className="relative mx-auto w-64 h-80 rounded-b-[48px] rounded-t-[28px] border-4 border-white bg-gradient-to-b from-white/50 via-rose-50/40 to-rose-100/50 jar-glow p-4 flex flex-col justify-end shadow-xl">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-8 rounded-t-xl bg-[#8D6E63] text-[10px] uppercase font-mono tracking-widest text-white flex items-center justify-center">
-                    Frasco de Amor
+                <div className="flex flex-col items-center justify-center my-6">
+                  <div
+                    onClick={pullQuoteFromJar}
+                    className="cursor-pointer jar-glow w-44 h-56 rounded-3xl border-2 border-rose-200 bg-white/70 p-4 flex flex-col items-center justify-between animate-float transition-all hover:scale-105 relative"
+                  >
+                    <div className="w-24 h-4 bg-rose-200 rounded-full border border-rose-300"></div>
+                    <div className="flex flex-wrap justify-center gap-1.5 p-2">
+                      <span className="text-2xl animate-pulse">✨</span>
+                      <span className="text-2xl">💌</span>
+                      <span className="text-2xl">💖</span>
+                      <span className="text-2xl">🌸</span>
+                    </div>
+                    <p className="text-[11px] font-semibold text-rose-600 uppercase tracking-wider">Toca el frasco</p>
                   </div>
-                  <div className="relative z-10 mx-auto mb-3 rounded-lg bg-white/95 px-4 py-1.5 shadow-sm border border-rose-200">
-                    <span className="font-script text-lg text-rose-600 block leading-tight">Para Sam</span>
-                    <span className="text-[10px] text-neutral-500 font-mono">{quotes.length} frases guardadas</span>
+
+                  <div className="mt-6 flex gap-3">
+                    <button
+                      onClick={pullQuoteFromJar}
+                      className="rounded-xl bg-rose-600 px-6 py-2.5 text-xs font-semibold text-white shadow-md hover:bg-rose-700 transition-all"
+                    >
+                      🪄 Sacar una frase
+                    </button>
+                    <button
+                      onClick={() => setIsAddQuoteOpen(true)}
+                      className="rounded-xl border border-rose-200 bg-white px-4 py-2.5 text-xs font-semibold text-neutral-700 hover:bg-rose-50"
+                    >
+                      + Añadir frase
+                    </button>
                   </div>
                 </div>
 
-                <div className="mt-8 flex flex-wrap justify-center gap-3">
-                  <button
-                    onClick={pullQuoteFromJar}
-                    className="rounded-xl bg-gradient-to-r from-rose-500 via-rose-600 to-rose-700 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-rose-500/25 hover:scale-105 active:scale-95 transition-all"
-                  >
-                    ✨ Sacar una frase del frasco
-                  </button>
-                  <button
-                    onClick={() => setIsManageQuotesOpen(true)}
-                    className="rounded-xl border border-rose-200 bg-white px-4 py-3.5 text-xs font-medium text-neutral-700 hover:bg-rose-50"
-                  >
-                    ✍️ Escribir frases ({quotes.length})
-                  </button>
-                </div>
+                {/* Nota que sale del frasco */}
+                {currentQuoteNote && (
+                  <div className="mt-8 mx-auto max-w-md rounded-2xl border border-rose-200 bg-[#FAF5EE] p-6 shadow-xl relative animate-bounce" style={{ animationIterationCount: 1 }}>
+                    <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-100 text-rose-700 mb-3">
+                      {currentQuoteNote.tag}
+                    </span>
+                    <p className="font-romantic text-xl sm:text-2xl text-neutral-800 italic leading-relaxed">
+                      "{currentQuoteNote.text}"
+                    </p>
+                    <p className="font-script text-xl text-rose-500 mt-4 text-right">Para mi hermosa Sam ❤️</p>
+                  </div>
+                )}
               </div>
             </section>
 
+            {/* SECCIÓN DE FOTOS */}
             <section id="fotos" className="py-16 px-4 max-w-6xl mx-auto border-t border-rose-100">
               <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
                 <div>
-                  <p className="font-script text-2xl text-rose-500 mb-1">Nuestros momentos congelados en el tiempo</p>
+                  <p className="font-script text-2xl text-rose-500 mb-1">Momentos inolvidables</p>
                   <h2 className="font-romantic text-3xl sm:text-4xl font-bold text-neutral-900">Galería de Recuerdos</h2>
                 </div>
                 <button
-                  onClick={() => setIsUploadPhotoOpen(true)}
-                  className="rounded-xl bg-rose-600 px-4 py-2 text-xs font-medium text-white hover:bg-rose-700 self-start"
+                  onClick={() => setIsAddPhotoOpen(true)}
+                  className="rounded-xl bg-neutral-900 px-4 py-2 text-xs font-medium text-white hover:bg-neutral-800 self-start"
                 >
-                  📷 Agregar nueva foto
+                  📷 Subir nueva foto
                 </button>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {photos.map((photo) => (
-                  <div
-                    key={photo.id}
-                    onClick={() => setActivePhoto(photo)}
-                    className="cursor-pointer rounded-xl bg-white p-4 shadow-md hover:shadow-xl transition-all border border-stone-200"
-                  >
-                    <div className="aspect-[4/3] rounded-lg overflow-hidden bg-neutral-100">
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                {photos.map((item) => (
+                  <div key={item.id} className="group rounded-2xl overflow-hidden border border-rose-200 bg-white shadow-sm hover:shadow-md transition-all">
+                    <div className="relative aspect-[4/3] bg-neutral-100 overflow-hidden">
                       <img
-                        src={photo.url}
-                        alt={photo.caption}
+                        src={item.url}
+                        alt={item.caption}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500"
                         onError={(e) => {
-                          if (photo.fallbackUrl && e.currentTarget.src !== photo.fallbackUrl) {
-                            e.currentTarget.src = photo.fallbackUrl;
-                          }
+                          e.target.onerror = null;
+                          e.target.src = item.fallbackUrl || 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80';
                         }}
-                        className="w-full h-full object-cover"
                       />
                     </div>
-                    <div className="pt-3">
-                      <p className="font-romantic text-lg font-bold text-neutral-800 line-clamp-2">{photo.caption}</p>
-                      <p className="text-xs text-neutral-400 mt-1">{photo.date} · {photo.location}</p>
+                    <div className="p-4">
+                      <div className="flex justify-between items-center text-[10px] text-neutral-400 mb-1">
+                        <span>{item.date}</span>
+                        <span>{item.location}</span>
+                      </div>
+                      <p className="text-xs text-neutral-700 font-light italic">"{item.caption}"</p>
                     </div>
                   </div>
                 ))}
               </div>
             </section>
 
-            <section id="videos" className="py-16 px-4 max-w-6xl mx-auto border-t border-rose-100">
+            {/* SECCIÓN DE VIDEOS */}
+            <section id="videos" className="py-16 px-4 max-w-4xl mx-auto border-t border-rose-100">
               <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
                 <div>
-                  <p className="font-script text-2xl text-rose-500 mb-1">Nuestras risas y miradas en movimiento</p>
-                  <h2 className="font-romantic text-3xl sm:text-4xl font-bold text-neutral-900">Cine de Nuestro Amor</h2>
+                  <p className="font-script text-2xl text-rose-500 mb-1">Canciones y Recuerdos en Movimiento</p>
+                  <h2 className="font-romantic text-3xl sm:text-4xl font-bold text-neutral-900">Nuestros Videos</h2>
                 </div>
                 <button
-                  onClick={() => setIsUploadVideoOpen(true)}
+                  onClick={() => setIsAddVideoOpen(true)}
                   className="rounded-xl bg-neutral-900 px-4 py-2 text-xs font-medium text-white hover:bg-neutral-800 self-start"
                 >
-                  🎥 Subir nuevo video
+                  🎥 Añadir nuevo video
                 </button>
               </div>
 
-              {videos.length > 0 && selectedVideo && (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <div className="lg:col-span-2 rounded-2xl bg-black p-3 shadow-2xl">
-                    <div className="aspect-video w-full rounded-xl overflow-hidden bg-neutral-950 flex items-center justify-center">
-                      {selectedVideo.type === 'embed' ? (
-                        <iframe src={selectedVideo.url} className="w-full h-full border-0" allowFullScreen />
-                      ) : (
-                        <video controls key={selectedVideo.url} className="w-full h-full object-contain">
-                          <source src={selectedVideo.url} type="video/mp4" />
-                        </video>
-                      )}
+              <div className="space-y-8">
+                {videos.map((vid) => (
+                  <div key={vid.id} className="rounded-2xl border border-rose-200 bg-white p-4 shadow-sm overflow-hidden">
+                    <div className="relative aspect-video rounded-xl overflow-hidden bg-black mb-4">
+                      <iframe
+                        src={vid.url}
+                        title={vid.title}
+                        className="w-full h-full border-0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
                     </div>
-                    <div className="p-4 text-white">
-                      <h3 className="font-romantic text-2xl font-bold text-rose-100">{selectedVideo.title}</h3>
-                      <p className="text-sm text-stone-300 mt-2 font-light">{selectedVideo.caption}</p>
-                    </div>
+                    <h3 className="font-romantic text-xl font-bold text-neutral-900">{vid.title}</h3>
+                    <p className="text-xs text-neutral-600 mt-1 font-light">{vid.caption}</p>
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-2">Videos guardados ({videos.length})</p>
-                    {videos.map(v => (
-                      <div
-                        key={v.id}
-                        onClick={() => setSelectedVideo(v)}
-                        className={`p-3 rounded-xl border cursor-pointer transition-all ${v.id === selectedVideo.id ? 'bg-white border-rose-300 shadow-md' : 'bg-white/60 border-rose-100 hover:bg-white'}`}
-                      >
-                        <h4 className="text-sm font-semibold text-neutral-900 truncate">{v.title}</h4>
-                        <p className="text-xs text-neutral-500 line-clamp-1 mt-0.5">{v.caption}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+                ))}
+              </div>
             </section>
           </main>
 
-          {/* Modal Audio Config */}
-          {isAudioModalOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setIsAudioModalOpen(false)}>
-              <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-rose-100" onClick={e => e.stopPropagation()}>
-                <h3 className="font-romantic text-2xl font-bold text-neutral-900 mb-3">Audio de la Canción</h3>
-                <p className="text-xs text-neutral-600 mb-4">
-                  Coloca tu archivo MP3 en tu repositorio de GitHub dentro de una carpeta llamada <code>musica</code> (por ejemplo <code>musica/cancion.mp3</code>).
-                </p>
-                <form onSubmit={(e) => {
-                  e.preventDefault();
-                  localStorage.setItem('sam_song_url', customSongPath);
-                  audioPlayer.initAudioElement(customSongPath);
-                  audioPlayer.play();
-                  setIsMusicPlaying(true);
-                  setIsAudioModalOpen(false);
-                }} className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-neutral-700 mb-1">Ruta del audio en el repositorio</label>
-                    <input
-                      type="text"
-                      value={customSongPath}
-                      onChange={e => setCustomSongPath(e.target.value)}
-                      placeholder="musica/cancion.mp3 o cancion.mp3"
-                      className="w-full rounded-lg border border-neutral-200 p-2 text-xs focus:outline-none"
-                    />
-                  </div>
-                  <div className="flex justify-end gap-2 pt-2">
-                    <button type="button" onClick={() => setIsAudioModalOpen(false)} className="rounded-lg px-3 py-1.5 text-xs text-neutral-600">Cancelar</button>
-                    <button type="submit" className="rounded-lg bg-rose-600 px-4 py-1.5 text-xs font-semibold text-white">Guardar y Probar</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
+          {/* FOOTER */}
+          <footer className="border-t border-rose-100 bg-[#FAF7F5] py-12 px-4 text-center">
+            <p className="font-script text-3xl text-rose-500 mb-2">Para siempre juntos</p>
+            <p className="font-romantic text-xl text-neutral-800">Hecho con todo mi amor para ti, Sam 💕</p>
+            <p className="text-xs text-neutral-400 mt-2">Cada latido de este rincón es tuyo.</p>
+          </footer>
 
-          {currentQuoteNote && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setCurrentQuoteNote(null)}>
-              <div className="w-full max-w-md rounded-2xl letter-paper p-8 shadow-2xl border-2 border-rose-200 text-center" onClick={e => e.stopPropagation()}>
-                <span className="text-3xl block mb-2">💌</span>
-                <p className="font-script text-xl text-rose-600 mb-2">Mensajito de amor</p>
-                <blockquote className="font-romantic text-2xl font-bold text-neutral-900 mb-6">“{currentQuoteNote.text}”</blockquote>
-                <div className="text-xs text-neutral-500 mb-6">{currentQuoteNote.tag || 'Para Sam'}</div>
-                <div className="flex justify-center gap-3">
-                  <button onClick={pullQuoteFromJar} className="rounded-lg bg-rose-600 px-4 py-2 text-xs font-medium text-white hover:bg-rose-700">
-                    🔄 Sacar otra frase
-                  </button>
-                  <button onClick={() => setCurrentQuoteNote(null)} className="rounded-lg bg-stone-200 px-4 py-2 text-xs font-medium text-stone-700 hover:bg-stone-300">
-                    Cerrar
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
+          {/* MODAL: LEER CARTA COMPLETA */}
           {selectedLetter && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setSelectedLetter(null)}>
-              <div className="w-full max-w-2xl rounded-2xl letter-paper p-8 shadow-2xl border border-stone-300 my-8 max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-                <div className="flex justify-between items-center mb-4 pb-3 border-b border-stone-200">
-                  <div>
-                    <span className="text-xs text-stone-500">{selectedLetter.category} · {selectedLetter.date}</span>
-                    <h3 className="font-romantic text-3xl font-bold text-stone-900">{selectedLetter.title}</h3>
-                  </div>
-                  <button onClick={() => setSelectedLetter(null)} className="text-stone-400 hover:text-stone-700 text-xl font-bold">×</button>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+              <div className="w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-3xl letter-paper border-2 border-rose-300 p-8 shadow-2xl relative text-left">
+                <button
+                  onClick={() => setSelectedLetter(null)}
+                  className="absolute top-4 right-4 rounded-full bg-white/80 p-2 text-neutral-500 hover:text-neutral-800 text-xs shadow-sm"
+                >
+                  ✕ Cerrar
+                </button>
+                <div className="flex justify-between items-center text-xs text-rose-600 mb-3 uppercase tracking-wider font-semibold">
+                  <span>{selectedLetter.category}</span>
+                  <span>{selectedLetter.date}</span>
                 </div>
-                <div className="text-stone-800 leading-relaxed font-light whitespace-pre-wrap mb-8 text-base">
+                <h2 className="font-romantic text-3xl sm:text-4xl font-bold text-neutral-900 mb-6 border-b border-rose-200 pb-3">
+                  {selectedLetter.title}
+                </h2>
+                <div className="text-base sm:text-lg text-neutral-700 leading-relaxed font-light whitespace-pre-wrap font-serif">
                   {selectedLetter.content}
                 </div>
-                <div className="pt-4 border-t border-stone-200 flex justify-between items-center text-rose-600 font-romantic text-lg italic">
-                  <span>Siempre tuyo con amor ❤️</span>
-                  <button onClick={() => setSelectedLetter(null)} className="rounded-lg bg-stone-800 px-4 py-2 text-xs font-medium text-white hover:bg-stone-900">
-                    Cerrar carta
+                <div className="mt-8 pt-4 border-t border-rose-200 text-right">
+                  <p className="font-script text-3xl text-rose-600">Con todo mi amor para ti, Sam</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* MODAL: ESCRIBIR NUEVA CARTA */}
+          {isWriteLetterOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+              <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl text-left">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-romantic text-2xl font-bold text-neutral-900">Escribir carta para Sam</h3>
+                  <button onClick={() => setIsWriteLetterOpen(false)} className="text-neutral-400 hover:text-neutral-700">✕</button>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-medium text-neutral-600 mb-1">Título de la carta</label>
+                    <input
+                      type="text"
+                      value={newLetterTitle}
+                      onChange={(e) => setNewLetterTitle(e.target.value)}
+                      placeholder="Ej. Lo que siento cuando te miro..."
+                      className="w-full rounded-xl border border-neutral-300 p-2.5 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-neutral-600 mb-1">Categoría</label>
+                    <select
+                      value={newLetterCategory}
+                      onChange={(e) => setNewLetterCategory(e.target.value)}
+                      className="w-full rounded-xl border border-neutral-300 p-2.5 text-sm"
+                    >
+                      <option value="romantica">Romántica</option>
+                      <option value="recuerdo">Recuerdo especial</option>
+                      <option value="promesa">Promesa de amor</option>
+                      <option value="agradecimiento">Agradecimiento</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-neutral-600 mb-1">Contenido de la carta</label>
+                    <textarea
+                      rows={6}
+                      value={newLetterContent}
+                      onChange={(e) => setNewLetterContent(e.target.value)}
+                      placeholder="Escribe desde tu corazón..."
+                      className="w-full rounded-xl border border-neutral-300 p-2.5 text-sm"
+                    />
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (!newLetterTitle || !newLetterContent) return;
+                      saveAndSetLetters([{
+                        id: Date.now().toString(),
+                        title: newLetterTitle,
+                        category: newLetterCategory,
+                        date: new Date().toLocaleDateString('es-ES'),
+                        content: newLetterContent
+                      }, ...letters]);
+                      setNewLetterTitle('');
+                      setNewLetterContent('');
+                      setIsWriteLetterOpen(false);
+                      confetti({ particleCount: 50, spread: 70 });
+                    }}
+                    className="w-full rounded-xl bg-rose-600 py-3 text-xs font-semibold text-white hover:bg-rose-700"
+                  >
+                    Guardar carta 💕
                   </button>
                 </div>
               </div>
             </div>
           )}
 
-          {isWriteLetterOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setIsWriteLetterOpen(false)}>
-              <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl border border-rose-100" onClick={e => e.stopPropagation()}>
-                <h3 className="font-romantic text-2xl font-bold text-neutral-900 mb-4">Escribir carta para Sam</h3>
-                <form onSubmit={(e) => {
-                  e.preventDefault();
-                  if (!newLetterTitle || !newLetterContent) return;
-                  saveAndSetLetters([{
-                    id: String(Date.now()),
-                    title: newLetterTitle,
-                    category: newLetterCategory,
-                    content: newLetterContent,
-                    date: new Date().toLocaleDateString('es-ES')
-                  }, ...letters]);
-                  setNewLetterTitle('');
-                  setNewLetterContent('');
-                  setIsWriteLetterOpen(false);
-                }} className="space-y-4">
-                  <input
-                    required
-                    type="text"
-                    value={newLetterTitle}
-                    onChange={e => setNewLetterTitle(e.target.value)}
-                    placeholder="Título de la carta..."
-                    className="w-full rounded-xl border border-neutral-200 p-2.5 text-sm focus:border-rose-400 focus:outline-none"
-                  />
-                  <select
-                    value={newLetterCategory}
-                    onChange={e => setNewLetterCategory(e.target.value)}
-                    className="w-full rounded-xl border border-neutral-200 p-2.5 text-sm focus:border-rose-400 focus:outline-none"
-                  >
-                    <option value="romantica">Carta Romántica</option>
-                    <option value="promesa">Promesa de Amor</option>
-                    <option value="recuerdo">Recuerdos Inolvidables</option>
-                    <option value="especial">Momento Especial</option>
-                  </select>
-                  <textarea
-                    required
-                    rows={6}
-                    value={newLetterContent}
-                    onChange={e => setNewLetterContent(e.target.value)}
-                    placeholder="Escribe todo lo que sientes aquí..."
-                    className="w-full rounded-xl border border-neutral-200 p-2.5 text-sm focus:border-rose-400 focus:outline-none"
-                  />
-                  <div className="flex justify-end gap-2 pt-2">
-                    <button type="button" onClick={() => setIsWriteLetterOpen(false)} className="rounded-xl px-4 py-2 text-xs text-neutral-600">Cancelar</button>
-                    <button type="submit" className="rounded-xl bg-rose-600 px-5 py-2 text-xs font-semibold text-white hover:bg-rose-700">Guardar carta</button>
+          {/* MODAL: AÑADIR FRASE AL FRASCO */}
+          {isAddQuoteOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+              <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl text-left">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-romantic text-2xl font-bold text-neutral-900">Añadir frase para Sam</h3>
+                  <button onClick={() => setIsAddQuoteOpen(false)} className="text-neutral-400 hover:text-neutral-700">✕</button>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-medium text-neutral-600 mb-1">Frase bonita</label>
+                    <textarea
+                      rows={3}
+                      value={newQuoteText}
+                      onChange={(e) => setNewQuoteText(e.target.value)}
+                      placeholder="Escribe la frase que quieres meter al frasco..."
+                      className="w-full rounded-xl border border-neutral-300 p-2.5 text-sm"
+                    />
                   </div>
-                </form>
-              </div>
-            </div>
-          )}
-
-          {isManageQuotesOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setIsManageQuotesOpen(false)}>
-              <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl border border-rose-100" onClick={e => e.stopPropagation()}>
-                <h3 className="font-romantic text-2xl font-bold text-neutral-900 mb-4">Frases del Frasco ({quotes.length})</h3>
-                <form onSubmit={(e) => {
-                  e.preventDefault();
-                  if (!newQuoteText) return;
-                  saveAndSetQuotes([{ id: String(Date.now()), text: newQuoteText, tag: newQuoteTag }, ...quotes]);
-                  setNewQuoteText('');
-                }} className="mb-4 space-y-2 bg-rose-50 p-3 rounded-xl">
-                  <textarea
-                    required
-                    rows={2}
-                    value={newQuoteText}
-                    onChange={e => setNewQuoteText(e.target.value)}
-                    placeholder="Escribe una nueva frase para el frasco..."
-                    className="w-full rounded-lg border border-rose-200 p-2 text-xs focus:outline-none"
-                  />
-                  <div className="flex justify-between gap-2">
+                  <div>
+                    <label className="block text-xs font-medium text-neutral-600 mb-1">Etiqueta</label>
                     <input
                       type="text"
                       value={newQuoteTag}
-                      onChange={e => setNewQuoteTag(e.target.value)}
-                      placeholder="Etiqueta..."
-                      className="rounded-lg border border-rose-200 px-2 py-1 text-xs"
-                    />
-                    <button type="submit" className="rounded-lg bg-rose-600 px-4 py-1 text-xs font-semibold text-white">Meter al frasco</button>
-                  </div>
-                </form>
-                <div className="max-h-48 overflow-y-auto space-y-1.5">
-                  {quotes.map(q => (
-                    <div key={q.id} className="flex justify-between items-center p-2 rounded border border-neutral-100 text-xs">
-                      <span className="truncate pr-2 italic">“{q.text}”</span>
-                      <button onClick={() => saveAndSetQuotes(quotes.filter(item => item.id !== q.id))} className="text-neutral-400 hover:text-red-500">🗑️</button>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex justify-end pt-4">
-                  <button onClick={() => setIsManageQuotesOpen(false)} className="rounded-lg bg-neutral-900 px-4 py-1.5 text-xs text-white">Listo</button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {isUploadPhotoOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setIsUploadPhotoOpen(false)}>
-              <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-rose-100" onClick={e => e.stopPropagation()}>
-                <h3 className="font-romantic text-2xl font-bold text-neutral-900 mb-4">Agregar Foto para Sam</h3>
-                <form onSubmit={(e) => {
-                  e.preventDefault();
-                  if (!newPhotoUrl) return;
-                  saveAndSetPhotos([{
-                    id: String(Date.now()),
-                    url: newPhotoUrl,
-                    caption: newPhotoCaption || 'Un momento inolvidable contigo',
-                    date: newPhotoDate || 'Hoy y siempre',
-                    location: newPhotoLocation || 'Juntos'
-                  }, ...photos]);
-                  setNewPhotoUrl('');
-                  setNewPhotoCaption('');
-                  setIsUploadPhotoOpen(false);
-                }} className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-neutral-700 mb-1">Subir archivo o foto</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          const reader = new FileReader();
-                          reader.onload = () => setNewPhotoUrl(reader.result);
-                          reader.readAsDataURL(file);
-                        }
-                      }}
-                      className="block w-full text-xs text-neutral-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-rose-50 file:text-rose-700"
+                      onChange={(e) => setNewQuoteTag(e.target.value)}
+                      placeholder="Ej. Ternura, Promesa, Beso"
+                      className="w-full rounded-xl border border-neutral-300 p-2.5 text-sm"
                     />
                   </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-neutral-700 mb-1">O ruta de la foto en tu repositorio (ej. fotos/foto1.jpg) o enlace</label>
-                    <input
-                      type="text"
-                      placeholder="Ej: fotos/foto1.jpg o ./imagen.png o https://..."
-                      value={newPhotoUrl || ''}
-                      onChange={e => setNewPhotoUrl(e.target.value)}
-                      className="w-full rounded-lg border border-neutral-200 p-2 text-xs focus:outline-none"
-                    />
-                  </div>
-                  {newPhotoUrl && (
-                    <div className="h-32 w-full rounded-lg overflow-hidden border">
-                      <img src={newPhotoUrl} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                    </div>
-                  )}
-                  <input
-                    type="text"
-                    required
-                    value={newPhotoCaption}
-                    onChange={e => setNewPhotoCaption(e.target.value)}
-                    placeholder="Dedicatoria..."
-                    className="w-full rounded-lg border border-neutral-200 p-2 text-xs focus:outline-none"
-                  />
-                  <div className="flex justify-end gap-2 pt-2">
-                    <button type="button" onClick={() => setIsUploadPhotoOpen(false)} className="rounded-lg px-3 py-1.5 text-xs text-neutral-600">Cancelar</button>
-                    <button type="submit" disabled={!newPhotoUrl} className="rounded-lg bg-rose-600 px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-50">Guardar foto</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
-
-          {isUploadVideoOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setIsUploadVideoOpen(false)}>
-              <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-rose-100" onClick={e => e.stopPropagation()}>
-                <h3 className="font-romantic text-2xl font-bold text-neutral-900 mb-4">Subir Video para Sam</h3>
-                <form onSubmit={(e) => {
-                  e.preventDefault();
-                  if (!newVideoUrl) return;
-                  let finalUrl = newVideoUrl;
-                  let finalType = 'url';
-                  if (finalUrl.includes('youtube.com') || finalUrl.includes('youtu.be')) {
-                    finalType = 'embed';
-                    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-                    const match = finalUrl.match(regExp);
-                    if (match && match[2].length === 11) finalUrl = `https://www.youtube.com/embed/${match[2]}`;
-                  }
-                  const created = {
-                    id: String(Date.now()),
-                    title: newVideoTitle || 'Video de nuestro amor',
-                    url: finalUrl,
-                    caption: newVideoCaption || 'Momentos juntos',
-                    date: new Date().toLocaleDateString('es-ES'),
-                    type: finalType
-                  };
-                  saveAndSetVideos([created, ...videos]);
-                  setSelectedVideo(created);
-                  setNewVideoTitle('');
-                  setNewVideoUrl('');
-                  setIsUploadVideoOpen(false);
-                }} className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-neutral-700 mb-1">Subir archivo de video desde tu dispositivo</label>
-                    <input
-                      type="file"
-                      accept="video/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setNewVideoUrl(URL.createObjectURL(file));
-                          if (!newVideoTitle) setNewVideoTitle(file.name.replace(/\.[^/.]+$/, ''));
-                        }
-                      }}
-                      className="block w-full text-xs text-neutral-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-rose-50 file:text-rose-700"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-neutral-700 mb-1">O ruta relativa (ej. videos/video1.mp4) o YouTube</label>
-                    <input
-                      type="text"
-                      placeholder="Ej: videos/video1.mp4 o https://youtube.com/..."
-                      value={newVideoUrl}
-                      onChange={e => setNewVideoUrl(e.target.value)}
-                      className="w-full rounded-lg border border-neutral-200 p-2 text-xs focus:outline-none"
-                    />
-                  </div>
-                  <input
-                    type="text"
-                    required
-                    value={newVideoTitle}
-                    onChange={e => setNewVideoTitle(e.target.value)}
-                    placeholder="Título del video..."
-                    className="w-full rounded-lg border border-neutral-200 p-2 text-xs focus:outline-none"
-                  />
-                  <textarea
-                    rows={2}
-                    value={newVideoCaption}
-                    onChange={e => setNewVideoCaption(e.target.value)}
-                    placeholder="Dedicatoria..."
-                    className="w-full rounded-lg border border-neutral-200 p-2 text-xs focus:outline-none"
-                  />
-                  <div className="flex justify-end gap-2 pt-2">
-                    <button type="button" onClick={() => setIsUploadVideoOpen(false)} className="rounded-lg px-3 py-1.5 text-xs text-neutral-600">Cancelar</button>
-                    <button type="submit" disabled={!newVideoUrl} className="rounded-lg bg-rose-600 px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-50">Guardar video</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
-
-          {activePhoto && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md" onClick={() => setActivePhoto(null)}>
-              <div className="max-w-3xl w-full bg-white rounded-2xl p-4 shadow-2xl" onClick={e => e.stopPropagation()}>
-                <div className="max-h-[70vh] bg-neutral-950 rounded-xl overflow-hidden flex items-center justify-center">
-                  <img
-                    src={activePhoto.url}
-                    onError={(e) => {
-                      if (activePhoto.fallbackUrl && e.currentTarget.src !== activePhoto.fallbackUrl) {
-                        e.currentTarget.src = activePhoto.fallbackUrl;
-                      }
+                  <button
+                    onClick={() => {
+                      if (!newQuoteText) return;
+                      saveAndSetQuotes([{
+                        id: Date.now().toString(),
+                        text: newQuoteText,
+                        tag: newQuoteTag || 'Amor'
+                      }, ...quotes]);
+                      setNewQuoteText('');
+                      setIsAddQuoteOpen(false);
+                      confetti({ particleCount: 40, spread: 60 });
                     }}
-                    className="max-h-[70vh] object-contain"
-                  />
-                </div>
-                <div className="mt-3 flex justify-between items-center">
-                  <div>
-                    <h3 className="font-romantic text-2xl font-bold text-neutral-900">{activePhoto.caption}</h3>
-                    <p className="text-xs text-neutral-500">{activePhoto.date} · {activePhoto.location}</p>
-                  </div>
-                  <button onClick={() => setActivePhoto(null)} className="rounded-lg bg-neutral-900 px-4 py-2 text-xs text-white">Cerrar</button>
+                    className="w-full rounded-xl bg-rose-600 py-3 text-xs font-semibold text-white hover:bg-rose-700"
+                  >
+                    Meter al frasco ✨
+                  </button>
                 </div>
               </div>
             </div>
           )}
 
-          <footer className="border-t border-rose-100 bg-[#FAF7F5] py-8 px-4 text-center text-xs text-neutral-500 font-light">
-            <p className="font-romantic text-lg font-bold text-neutral-800 mb-1">Para Sam ❤️</p>
-            <p>Hecho con amor infinito, paciencia y cada latido de mi corazón.</p>
-          </footer>
+          {/* MODAL: SUBIR FOTO */}
+          {isAddPhotoOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+              <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl text-left">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-romantic text-2xl font-bold text-neutral-900">Añadir recuerdo con foto</h3>
+                  <button onClick={() => setIsAddPhotoOpen(false)} className="text-neutral-400 hover:text-neutral-700">✕</button>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-medium text-neutral-600 mb-1">URL de la foto o imagen</label>
+                    <input
+                      type="text"
+                      value={newPhotoUrl}
+                      onChange={(e) => setNewPhotoUrl(e.target.value)}
+                      placeholder="https://ejemplo.com/nuestrafoto.jpg"
+                      className="w-full rounded-xl border border-neutral-300 p-2.5 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-neutral-600 mb-1">Descripción o pensamiento</label>
+                    <input
+                      type="text"
+                      value={newPhotoCaption}
+                      onChange={(e) => setNewPhotoCaption(e.target.value)}
+                      placeholder="Qué significa esta foto para ti..."
+                      className="w-full rounded-xl border border-neutral-300 p-2.5 text-sm"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-medium text-neutral-600 mb-1">Fecha</label>
+                      <input
+                        type="text"
+                        value={newPhotoDate}
+                        onChange={(e) => setNewPhotoDate(e.target.value)}
+                        placeholder="Ej. Octubre 2026"
+                        className="w-full rounded-xl border border-neutral-300 p-2.5 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-neutral-600 mb-1">Lugar</label>
+                      <input
+                        type="text"
+                        value={newPhotoLocation}
+                        onChange={(e) => setNewPhotoLocation(e.target.value)}
+                        placeholder="Ej. Juntos"
+                        className="w-full rounded-xl border border-neutral-300 p-2.5 text-sm"
+                      />
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (!newPhotoUrl) return;
+                      saveAndSetPhotos([{
+                        id: Date.now().toString(),
+                        url: newPhotoUrl,
+                        caption: newPhotoCaption || 'Un momento contigo ❤️',
+                        date: newPhotoDate || 'Hoy',
+                        location: newPhotoLocation || 'Nuestro rincón'
+                      }, ...photos]);
+                      setNewPhotoUrl('');
+                      setNewPhotoCaption('');
+                      setIsAddPhotoOpen(false);
+                      confetti({ particleCount: 50, spread: 70 });
+                    }}
+                    className="w-full rounded-xl bg-rose-600 py-3 text-xs font-semibold text-white hover:bg-rose-700"
+                  >
+                    Guardar foto 📸
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* MODAL: SUBIR VIDEO */}
+          {isAddVideoOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+              <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl text-left">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-romantic text-2xl font-bold text-neutral-900">Añadir video</h3>
+                  <button onClick={() => setIsAddVideoOpen(false)} className="text-neutral-400 hover:text-neutral-700">✕</button>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-medium text-neutral-600 mb-1">Título del video o canción</label>
+                    <input
+                      type="text"
+                      value={newVideoTitle}
+                      onChange={(e) => setNewVideoTitle(e.target.value)}
+                      placeholder="Ej. Te amo y más"
+                      className="w-full rounded-xl border border-neutral-300 p-2.5 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-neutral-600 mb-1">URL de YouTube Embed</label>
+                    <input
+                      type="text"
+                      value={newVideoUrl}
+                      onChange={(e) => setNewVideoUrl(e.target.value)}
+                      placeholder="https://www.youtube.com/embed/..."
+                      className="w-full rounded-xl border border-neutral-300 p-2.5 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-neutral-600 mb-1">Dedicatoria</label>
+                    <input
+                      type="text"
+                      value={newVideoCaption}
+                      onChange={(e) => setNewVideoCaption(e.target.value)}
+                      placeholder="Por qué este video es especial..."
+                      className="w-full rounded-xl border border-neutral-300 p-2.5 text-sm"
+                    />
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (!newVideoUrl) return;
+                      saveAndSetVideos([{
+                        id: Date.now().toString(),
+                        title: newVideoTitle || 'Canción para Sam',
+                        url: newVideoUrl,
+                        caption: newVideoCaption || 'Nuestra canción especial ❤️',
+                        date: 'Hoy',
+                        duration: 'Video'
+                      }, ...videos]);
+                      setNewVideoUrl('');
+                      setNewVideoTitle('');
+                      setNewVideoCaption('');
+                      setIsAddVideoOpen(false);
+                      confetti({ particleCount: 50, spread: 70 });
+                    }}
+                    className="w-full rounded-xl bg-rose-600 py-3 text-xs font-semibold text-white hover:bg-rose-700"
+                  >
+                    Guardar video 🎥
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
         </div>
       );
     }
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
+    ReactDOM.render(<App />, document.getElementById('root'));
   </script>
 </body>
 </html>
