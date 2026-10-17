@@ -221,12 +221,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
       const [passwordError, setPasswordError] = useState('');
       const [showPassword, setShowPassword] = useState(false);
       const [isMusicPlaying, setIsMusicPlaying] = useState(false);
-
-      // Reproductor de Audio Real HTML5
       const audioRef = useRef(null);
-      const fileInputRef = useRef(null);
-      const [songName, setSongName] = useState(() => localStorage.getItem('sam_song_name') || 'cancion.mp3');
-      const [audioErrorMsg, setAudioErrorMsg] = useState('');
 
       // Datos principales con persistencia en localStorage
       const [letters, setLetters] = useState(() => {
@@ -279,7 +274,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
       const [newVideoUrl, setNewVideoUrl] = useState('');
       const [newVideoCaption, setNewVideoCaption] = useState('');
 
-      // Función para reproducir / pausar cancion.mp3
+      // Función simple para reproducir / pausar cancion.mp3
       const handleToggleMusic = () => {
         const audio = audioRef.current;
         if (!audio) return;
@@ -288,39 +283,15 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
           audio.pause();
           setIsMusicPlaying(false);
         } else {
-          setAudioErrorMsg('');
-          const playPromise = audio.play();
-          if (playPromise !== undefined) {
-            playPromise
-              .then(() => {
-                setIsMusicPlaying(true);
-              })
-              .catch((err) => {
-                console.warn("Error al reproducir audio:", err);
-                setAudioErrorMsg("No se encontró 'cancion.mp3' en la misma carpeta que este archivo. Puedes seleccionarlo directamente con el botón 📂");
-                audioSynth.play();
-                setIsMusicPlaying(true);
-              });
-          }
-        }
-      };
-
-      // Selector de archivo local desde computadora o celular
-      const handleSelectFile = (e) => {
-        const file = e.target.files && e.target.files[0];
-        if (file) {
-          const fileUrl = URL.createObjectURL(file);
-          setSongName(file.name);
-          localStorage.setItem('sam_song_name', file.name);
-          if (audioRef.current) {
-            audioRef.current.src = fileUrl;
-            audioRef.current.play()
-              .then(() => {
-                setIsMusicPlaying(true);
-                setAudioErrorMsg('');
-              })
-              .catch(err => console.warn(err));
-          }
+          audio.play()
+            .then(() => {
+              setIsMusicPlaying(true);
+            })
+            .catch((err) => {
+              console.warn("Audio play:", err);
+              audioSynth.play();
+              setIsMusicPlaying(true);
+            });
         }
       };
 
@@ -567,7 +538,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                   onClick={handleToggleMusic}
                   className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all cursor-pointer ${isMusicPlaying ? 'bg-rose-500 text-white animate-pulse shadow-md' : 'bg-stone-100 text-stone-700 hover:bg-rose-50'}`}
                 >
-                  {isMusicPlaying ? '🎶 Sonando: ' + songName : '🎵 Poner Nuestra Canción'}
+                  {isMusicPlaying ? '🎶 Sonando Te Amo y Más' : '🎵 Poner Nuestra Canción'}
                 </button>
                 <button
                   onClick={handleLock}
@@ -579,70 +550,26 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
             </div>
           </header>
 
-          {/* Elemento de Audio Real HTML5 y Selector de Archivo */}
-          <audio
-            ref={audioRef}
-            src="./cancion.mp3"
-            loop
-            preload="auto"
-            onError={() => {
-              console.warn("Aviso: No se encontró ./cancion.mp3");
-              setAudioErrorMsg("No se encontró el archivo './cancion.mp3' en la misma carpeta que index.html. Puedes seleccionarlo directamente con el botón 📂");
-            }}
-          />
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleSelectFile}
-            accept="audio/*"
-            className="hidden"
-          />
+          {/* Elemento de Audio Real - Ruta cancion.mp3 */}
+          <audio ref={audioRef} src="cancion.mp3" loop preload="auto" />
 
-          {/* Reproductor Flotante Interactivo */}
-          <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2">
-            {audioErrorMsg && (
-              <div className="max-w-xs rounded-2xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-900 shadow-xl text-left animate-bounce" style={{ animationIterationCount: 1 }}>
-                <p className="font-bold flex items-center gap-1 text-amber-800 mb-1">
-                  <span>⚠️</span> Archivo de música no encontrado
-                </p>
-                <p className="text-[11px] leading-relaxed mb-2">
-                  {audioErrorMsg}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current && fileInputRef.current.click()}
-                  className="rounded-lg bg-amber-600 px-3 py-1.5 text-[11px] font-bold text-white hover:bg-amber-700 transition-all flex items-center gap-1.5 cursor-pointer"
-                >
-                  <span>📂</span> Elegir archivo MP3 de mi computadora / cel
-                </button>
-              </div>
-            )}
-
-            <div className="flex items-center gap-3 rounded-full border border-rose-200 bg-white/95 py-2 px-4 shadow-xl backdrop-blur-md">
-              <span className={`text-xl ${isMusicPlaying ? 'animate-spin' : ''}`} style={{ animationDuration: '3s' }}>💿</span>
-              <div className="text-left pr-2">
-                <p className="text-xs font-semibold text-neutral-800 line-clamp-1">{songName}</p>
-                <p className="text-[10px] text-rose-500 font-medium">
-                  {isMusicPlaying ? 'Reproduciendo para Sam ❤️' : 'Pausado'}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={handleToggleMusic}
-                className="rounded-full bg-rose-50 p-2 text-xs text-rose-600 hover:bg-rose-100 transition-all cursor-pointer"
-                title={isMusicPlaying ? 'Pausar' : 'Reproducir'}
-              >
-                {isMusicPlaying ? '⏸️' : '▶️'}
-              </button>
-              <button
-                type="button"
-                onClick={() => fileInputRef.current && fileInputRef.current.click()}
-                className="rounded-full bg-stone-100 p-2 text-xs text-stone-600 hover:bg-stone-200 transition-all cursor-pointer"
-                title="Elegir o cambiar canción"
-              >
-                📂
-              </button>
+          {/* Reproductor Flotante Limpio */}
+          <div className="fixed bottom-4 right-4 z-50 flex items-center gap-3 rounded-full border border-rose-200 bg-white/95 py-2 px-4 shadow-xl backdrop-blur-md">
+            <span className={`text-xl ${isMusicPlaying ? 'animate-spin' : ''}`} style={{ animationDuration: '3s' }}>💿</span>
+            <div className="text-left pr-2">
+              <p className="text-xs font-semibold text-neutral-800 line-clamp-1">Te amo y más</p>
+              <p className="text-[10px] text-rose-500 font-medium">
+                {isMusicPlaying ? 'Reproduciendo para Sam ❤️' : 'Pausado'}
+              </p>
             </div>
+            <button
+              type="button"
+              onClick={handleToggleMusic}
+              className="rounded-full bg-rose-50 p-2 text-xs text-rose-600 hover:bg-rose-100 transition-all cursor-pointer"
+              title={isMusicPlaying ? 'Pausar' : 'Reproducir'}
+            >
+              {isMusicPlaying ? '⏸️' : '▶️'}
+            </button>
           </div>
 
           {/* CONTENIDO PRINCIPAL */}
@@ -708,7 +635,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                 </div>
               </div>
 
-              {/* 2. NUEVO APARTADO: Buzón de mensajes de Sam al correo */}
+              {/* 2. Buzón de mensajes de Sam al correo */}
               <div className="mx-auto mt-8 max-w-xl rounded-3xl border border-rose-200 bg-white/95 p-7 sm:p-8 shadow-lg backdrop-blur-md relative overflow-hidden text-left">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-script text-2xl text-rose-500">Buzón de amor</span>
