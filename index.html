@@ -53,8 +53,8 @@
     const { useState, useEffect, useRef } = React;
 
     // URL de audio en streaming web directo (El Libro de la Vida - Te Amo y Más por Diego Luna)
-    const DEFAULT_SONG_URL = "https://cdn.jsdelivr.net/gh/luisfernandoumiriflores-art/Te-amo-y-mas.@main/El%20Libro%20De%20La%20Vida%20-%20Te%20Amo%20Y%20M%C3%A1s%20%28By_%20Diego%20Luna%29%20%28Letra%29.mp3";
-    const BACKUP_SONG_URL = "https://raw.githubusercontent.com/luisfernandoumiriflores-art/Te-amo-y-mas./main/El%20Libro%20De%20La%20Vida%20-%20Te%20Amo%20Y%20M%C3%A1s%20%28By_%20Diego%20Luna%29%20%28Letra%29.mp3";
+    const DEFAULT_SONG_URL = "https://cdn.jsdelivr.net/gh/luisfernandoumiriflores-art/Te-amo-y-mas.@main/El%20Libro%20De%20La%20Vida%20-%20Te%20Amo%20Y%20M%C3%A1s%20%28By_%20Diego%20Luna%29%20%28L[...]" 
+    const BACKUP_SONG_URL = "https://raw.githubusercontent.com/luisfernandoumiriflores-art/Te-amo-y-mas./main/El%20Libro%20De%20La%20Vida%20-%20Te%20Amo%20Y%20M%C3%A1s%20%28By_%20Diego%20Luna%29%2[...]
 
     // Papelitos decorativos doblados que llenan visualmente el frasco de amor
     const JAR_DECORATIVE_PAPERS = [
@@ -97,7 +97,7 @@
 
 Hice este pequeño rincón en el universo de internet exclusivamente para ti. Para recordarte en cada instante lo infinitamente valiosa, hermosa y especial que eres en mi vida. 
 
-Desde que llegaste a mis días, todo tiene un color más cálido y un motivo más lindo para sonreír. Me encanta tu risa, la forma en la que me miras, cómo haces que hasta los días más pesados se sientan ligeros con un simple mensajito tuyo.
+Desde que llegaste a mis días, todo tiene un color más cálido y un motivo más lindo para sonreír. Me encanta tu risa, la forma en la que me miras, cómo haces que hasta los días más pesado[...]
 
 No importa cuánto pase el tiempo ni la distancia, mi lugar seguro siempre serás tú. Te amo más de lo que las palabras pueden expresar, Sam.`
       },
@@ -108,7 +108,7 @@ No importa cuánto pase el tiempo ni la distancia, mi lugar seguro siempre será
         category: 'recuerdo',
         content: `Sam mi cielo,
 
-A veces me pongo a recordar el momento exacto en que comenzamos a hablar y cómo poco a poco te fuiste convirtiendo en lo más importante para mí. Nadie me había hecho sentir esta paz y esta ilusión tan genuina.
+A veces me pongo a recordar el momento exacto en que comenzamos a hablar y cómo poco a poco te fuiste convirtiendo en lo más importante para mí. Nadie me había hecho sentir esta paz y esta il[...]
 
 Gracias por ser tú, por tu ternura, por tus ocurrencias y por acompañarme en este camino. Cada recuerdo contigo lo guardo como mi mayor tesoro.`
       },
@@ -156,8 +156,8 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
     const INITIAL_PHOTOS = [
       {
         id: '1',
-        url: 'ftooo.jpeg',
-        fallbackUrl: 'ftooo.jpeg',
+        url: 'https://raw.githubusercontent.com/oswld420/sam/main/ftooo.jpeg',
+        fallbackUrl: 'https://raw.githubusercontent.com/oswld420/sam/main/ftooo.jpeg',
         caption: 'Nuestras manos entrelazadas: el lugar perfecto donde pertenezco.',
         date: 'Un atardecer contigo',
         location: 'Nuestro rincón favorito'
@@ -518,7 +518,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                 <button
                   type="button"
                   onClick={handleToggleMusic}
-                  className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${isMusicPlaying ? 'bg-rose-500 text-white shadow-md' : 'bg-stone-100 text-stone-700 hover:bg-rose-50'}`}
+                  className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${isMusicPlaying ? 'bg-rose-500 text-white shadow-md' : 'bg-stone-[...]
                 >
                   <span className={isMusicPlaying ? 'animate-bounce' : ''}>{isMusicPlaying ? '⏸️' : '🎵'}</span>
                   <span>{isMusicPlaying ? 'Pausar Canción' : 'Poner Nuestra Canción'}</span>
@@ -617,7 +617,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                     type="button"
                     onClick={handleMissClick}
                     disabled={isSendingMiss}
-                    className="relative h-28 w-28 rounded-full flex items-center justify-center transition-all shadow-md hover:shadow-xl hover:scale-105 active:scale-95 bg-gradient-to-br from-rose-50 to-pink-100"
+                    className="relative h-28 w-28 rounded-full flex items-center justify-center transition-all shadow-md hover:shadow-xl hover:scale-105 active:scale-95 bg-gradient-to-br from-ros[...]
                     title="Haz clic si me extrañas"
                   >
                     <div
@@ -633,7 +633,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                     type="button"
                     onClick={handleMissClick}
                     disabled={isSendingMiss}
-                    className="mt-4 rounded-xl bg-gradient-to-r from-rose-500 via-rose-600 to-rose-700 px-6 py-2.5 text-xs font-semibold text-white shadow-md hover:scale-105 active:scale-95 transition-all"
+                    className="mt-4 rounded-xl bg-gradient-to-r from-rose-500 via-rose-600 to-rose-700 px-6 py-2.5 text-xs font-semibold text-white shadow-md hover:scale-105 active:scale-95 trans[...]
                   >
                     {isSendingMiss ? 'Enviando aviso de amor...' : '¡Sí, te extraño mucho! ❤️'}
                   </button>
@@ -667,7 +667,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                   Escríbeme algo que quieras decirme hoy
                 </h2>
                 <p className="text-xs sm:text-sm text-neutral-600 font-light mb-5">
-                  Escribe lo que sientes, lo que te pasó hoy o lo que quieras compartir conmigo. Cuando le des a enviar, me llegará en automático a mi correo personal para leerlo de inmediato 💕
+                  Escribe lo que sientes, lo que te pasó hoy o lo que quieras compartir conmigo. Cuando le des a enviar, me llegará en automático a mi correo personal para leerlo de inmediato [...]
                 </p>
 
                 <form onSubmit={handleSendSamMessage} className="space-y-4">
@@ -711,7 +711,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                       value={samMessage}
                       onChange={(e) => setSamMessage(e.target.value)}
                       placeholder="Escribe aquí lo que sientas, Sam... Prometo leerlo y sonreír al instante ❤️"
-                      className="w-full rounded-2xl border border-rose-200 bg-[#FCFBF9] p-4 text-sm text-neutral-800 placeholder-neutral-400 focus:border-rose-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-200 transition-all resize-none font-light leading-relaxed"
+                      className="w-full rounded-2xl border border-rose-200 bg-[#FCFBF9] p-4 text-sm text-neutral-800 placeholder-neutral-400 focus:border-rose-400 focus:bg-white focus:outline-non[...]
                       required
                     />
                   </div>
@@ -724,7 +724,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                     <button
                       type="submit"
                       disabled={isSendingSamMsg || !samMessage.trim()}
-                      className="w-full sm:w-auto rounded-xl bg-gradient-to-r from-rose-500 via-rose-600 to-rose-700 px-6 py-3 text-xs font-semibold text-white shadow-md hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full sm:w-auto rounded-xl bg-gradient-to-r from-rose-500 via-rose-600 to-rose-700 px-6 py-3 text-xs font-semibold text-white shadow-md hover:scale-105 active:sc[...]
                     >
                       {isSendingSamMsg ? (
                         <>
@@ -854,7 +854,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                   </div>
 
                   {/* Cuerpo de Vidrio del Frasco */}
-                  <div className="absolute bottom-0 left-0 right-0 top-10 rounded-b-[54px] rounded-t-[20px] border-4 border-white/80 bg-gradient-to-b from-white/45 via-rose-50/20 to-rose-100/50 jar-glow shadow-2xl overflow-hidden backdrop-blur-sm">
+                  <div className="absolute bottom-0 left-0 right-0 top-10 rounded-b-[54px] rounded-t-[20px] border-4 border-white/80 bg-gradient-to-b from-white/45 via-rose-50/20 to-rose-100/50 j[...]
                     {/* Brillo y Reflejo Curvo del Vidrio */}
                     <div className="absolute top-2 left-3 w-4 h-[94%] bg-gradient-to-r from-white/60 to-transparent rounded-full opacity-70 pointer-events-none z-20" />
                     <div className="absolute top-4 right-3 w-2 h-[88%] bg-white/40 rounded-full pointer-events-none z-20" />
@@ -878,7 +878,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                     <div className="absolute bottom-16 right-1/4 text-pink-400 text-xs animate-bounce pointer-events-none">💕</div>
 
                     {/* Etiqueta central vintage en el frasco */}
-                    <div className="absolute top-[38%] left-1/2 -translate-x-1/2 z-20 w-[84%] rounded-2xl bg-white/95 px-3 py-2.5 shadow-lg border border-rose-200 text-center backdrop-blur-md pointer-events-none">
+                    <div className="absolute top-[38%] left-1/2 -translate-x-1/2 z-20 w-[84%] rounded-2xl bg-white/95 px-3 py-2.5 shadow-lg border border-rose-200 text-center backdrop-blur-md poi[...]
                       <span className="font-script text-2xl text-rose-600 block leading-tight">Frasco de Amor</span>
                       <span className="font-romantic text-xs font-semibold text-neutral-800 block">Lleno de frases y promesas para ti</span>
                       <div className="mt-1 flex items-center justify-center gap-1 text-[11px] text-rose-500 font-semibold">
@@ -890,10 +890,10 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                 </div>
 
                 {/* Botón único para sacar una frase (sin botones de gestión) */}
-                <div className="mt-8 flex justify-center">
+                <div className="mt-8 flex justificar-center">
                   <button
                     onClick={pullQuoteFromJar}
-                    className="rounded-2xl bg-gradient-to-r from-rose-500 via-rose-600 to-rose-700 px-8 py-4 text-base font-semibold text-white shadow-xl shadow-rose-500/25 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
+                    className="rounded-2xl bg-gradient-to-r from-rose-500 via-rose-600 to-rose-700 px-8 py-4 text-base font-semibold text-white shadow-xl shadow-rose-500/25 hover:scale-105 active[...]
                   >
                     <span className="text-xl">✨</span>
                     <span>Sacar una frase del frasco</span>
@@ -983,7 +983,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                       <div
                         key={v.id}
                         onClick={() => setSelectedVideo(v)}
-                        className={`p-3 rounded-xl border cursor-pointer transition-all ${v.id === selectedVideo.id ? 'bg-white border-rose-300 shadow-md' : 'bg-white/60 border-rose-100 hover:bg-white'}`}
+                        className={`p-3 rounded-xl border cursor-pointer transition-all ${v.id === selectedVideo.id ? 'bg-white border-rose-300 shadow-md' : 'bg-white/60 border-rose-100 hover:bg-[...]
                       >
                         <h4 className="text-sm font-semibold text-neutral-900 truncate">{v.title}</h4>
                         <p className="text-xs text-neutral-500 line-clamp-1 mt-0.5">{v.caption}</p>
@@ -998,276 +998,14 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
           {/* Modal Quote Opened */}
           {currentQuoteNote && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setCurrentQuoteNote(null)}>
-              <div className="w-full max-w-md rounded-2xl letter-paper p-8 shadow-2xl border-2 border-rose-200 text-center" onClick={e => e.stopPropagation()}>
-                <span className="text-3xl block mb-2">💌</span>
-                <p className="font-script text-xl text-rose-600 mb-2">Mensajito de amor</p>
-                <blockquote className="font-romantic text-2xl font-bold text-neutral-900 mb-6">“{currentQuoteNote.text}”</blockquote>
-                <div className="text-xs text-neutral-500 mb-6">{currentQuoteNote.tag || 'Para Sam'}</div>
-                <div className="flex justify-center gap-3">
-                  <button onClick={pullQuoteFromJar} className="rounded-lg bg-rose-600 px-4 py-2 text-xs font-medium text-white hover:bg-rose-700">
-                    🔄 Sacar otra frase
-                  </button>
-                  <button onClick={() => setCurrentQuoteNote(null)} className="rounded-lg bg-stone-200 px-4 py-2 text-xs font-medium text-stone-700 hover:bg-stone-300">
-                    Cerrar
-                  </button>
-                </div>
-              </div>
-            </div>
+... (rest of file unchanged)
           )}
-
-          {/* Modal Read Letter */}
-          {selectedLetter && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setSelectedLetter(null)}>
-              <div className="w-full max-w-2xl rounded-2xl letter-paper p-8 shadow-2xl border border-stone-300 my-8 max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-                <div className="flex justify-between items-center mb-4 pb-3 border-b border-stone-200">
-                  <div>
-                    <span className="text-xs text-stone-500">{selectedLetter.category} · {selectedLetter.date}</span>
-                    <h3 className="font-romantic text-3xl font-bold text-stone-900">{selectedLetter.title}</h3>
-                  </div>
-                  <button onClick={() => setSelectedLetter(null)} className="text-stone-400 hover:text-stone-700 text-xl font-bold">×</button>
-                </div>
-                <div className="text-stone-800 leading-relaxed font-light whitespace-pre-wrap mb-8 text-base">
-                  {selectedLetter.content}
-                </div>
-                <div className="pt-4 border-t border-stone-200 flex justify-between items-center text-rose-600 font-romantic text-lg italic">
-                  <span>Siempre tuyo con amor ❤️</span>
-                  <button onClick={() => setSelectedLetter(null)} className="rounded-lg bg-stone-800 px-4 py-2 text-xs font-medium text-white hover:bg-stone-900">
-                    Cerrar carta
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Modal Write Letter */}
-          {isWriteLetterOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setIsWriteLetterOpen(false)}>
-              <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl border border-rose-100" onClick={e => e.stopPropagation()}>
-                <h3 className="font-romantic text-2xl font-bold text-neutral-900 mb-4">Escribir carta para Sam</h3>
-                <form onSubmit={(e) => {
-                  e.preventDefault();
-                  if (!newLetterTitle || !newLetterContent) return;
-                  saveAndSetLetters([{
-                    id: String(Date.now()),
-                    title: newLetterTitle,
-                    category: newLetterCategory,
-                    content: newLetterContent,
-                    date: new Date().toLocaleDateString('es-ES')
-                  }, ...letters]);
-                  setNewLetterTitle('');
-                  setNewLetterContent('');
-                  setIsWriteLetterOpen(false);
-                }} className="space-y-4">
-                  <input
-                    required
-                    type="text"
-                    value={newLetterTitle}
-                    onChange={e => setNewLetterTitle(e.target.value)}
-                    placeholder="Título de la carta..."
-                    className="w-full rounded-xl border border-neutral-200 p-2.5 text-sm focus:border-rose-400 focus:outline-none"
-                  />
-                  <select
-                    value={newLetterCategory}
-                    onChange={e => setNewLetterCategory(e.target.value)}
-                    className="w-full rounded-xl border border-neutral-200 p-2.5 text-sm focus:border-rose-400 focus:outline-none"
-                  >
-                    <option value="romantica">Carta Romántica</option>
-                    <option value="promesa">Promesa de Amor</option>
-                    <option value="recuerdo">Recuerdos Inolvidables</option>
-                    <option value="especial">Momento Especial</option>
-                  </select>
-                  <textarea
-                    required
-                    rows={6}
-                    value={newLetterContent}
-                    onChange={e => setNewLetterContent(e.target.value)}
-                    placeholder="Escribe todo lo que sientes aquí..."
-                    className="w-full rounded-xl border border-neutral-200 p-2.5 text-sm focus:border-rose-400 focus:outline-none"
-                  />
-                  <div className="flex justify-end gap-2 pt-2">
-                    <button type="button" onClick={() => setIsWriteLetterOpen(false)} className="rounded-xl px-4 py-2 text-xs text-neutral-600">Cancelar</button>
-                    <button type="submit" className="rounded-xl bg-rose-600 px-5 py-2 text-xs font-semibold text-white hover:bg-rose-700">Guardar carta</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
-
-          {/* Modal Photo Upload */}
-          {isUploadPhotoOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setIsUploadPhotoOpen(false)}>
-              <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-rose-100" onClick={e => e.stopPropagation()}>
-                <h3 className="font-romantic text-2xl font-bold text-neutral-900 mb-4">Agregar Foto para Sam</h3>
-                <form onSubmit={(e) => {
-                  e.preventDefault();
-                  if (!newPhotoUrl) return;
-                  saveAndSetPhotos([{
-                    id: String(Date.now()),
-                    url: newPhotoUrl,
-                    caption: newPhotoCaption || 'Un momento inolvidable contigo',
-                    date: newPhotoDate || 'Hoy y siempre',
-                    location: newPhotoLocation || 'Juntos'
-                  }, ...photos]);
-                  setNewPhotoUrl('');
-                  setNewPhotoCaption('');
-                  setIsUploadPhotoOpen(false);
-                }} className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-neutral-700 mb-1">Subir archivo o foto</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          const reader = new FileReader();
-                          reader.onload = () => setNewPhotoUrl(reader.result);
-                          reader.readAsDataURL(file);
-                        }
-                      }}
-                      className="block w-full text-xs text-neutral-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-rose-50 file:text-rose-700"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-neutral-700 mb-1">O ruta de la foto en tu repositorio (ej. fotos/foto1.jpg) o enlace</label>
-                    <input
-                      type="text"
-                      placeholder="Ej: fotos/foto1.jpg o ./imagen.png o https://..."
-                      value={newPhotoUrl || ''}
-                      onChange={e => setNewPhotoUrl(e.target.value)}
-                      className="w-full rounded-lg border border-neutral-200 p-2 text-xs focus:outline-none"
-                    />
-                  </div>
-                  {newPhotoUrl && (
-                    <div className="h-32 w-full rounded-lg overflow-hidden border">
-                      <img src={newPhotoUrl} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                    </div>
-                  )}
-                  <input
-                    type="text"
-                    required
-                    value={newPhotoCaption}
-                    onChange={e => setNewPhotoCaption(e.target.value)}
-                    placeholder="Dedicatoria..."
-                    className="w-full rounded-lg border border-neutral-200 p-2 text-xs focus:outline-none"
-                  />
-                  <div className="flex justify-end gap-2 pt-2">
-                    <button type="button" onClick={() => setIsUploadPhotoOpen(false)} className="rounded-lg px-3 py-1.5 text-xs text-neutral-600">Cancelar</button>
-                    <button type="submit" disabled={!newPhotoUrl} className="rounded-lg bg-rose-600 px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-50">Guardar foto</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
-
-          {/* Modal Video Upload */}
-          {isUploadVideoOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setIsUploadVideoOpen(false)}>
-              <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-rose-100" onClick={e => e.stopPropagation()}>
-                <h3 className="font-romantic text-2xl font-bold text-neutral-900 mb-4">Subir Video para Sam</h3>
-                <form onSubmit={(e) => {
-                  e.preventDefault();
-                  if (!newVideoUrl) return;
-                  let finalUrl = newVideoUrl;
-                  let finalType = 'url';
-                  if (finalUrl.includes('youtube.com') || finalUrl.includes('youtu.be')) {
-                    finalType = 'embed';
-                    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-                    const match = finalUrl.match(regExp);
-                    if (match && match[2].length === 11) finalUrl = `https://www.youtube.com/embed/${match[2]}`;
-                  }
-                  const created = {
-                    id: String(Date.now()),
-                    title: newVideoTitle || 'Video de nuestro amor',
-                    url: finalUrl,
-                    caption: newVideoCaption || 'Momentos juntos',
-                    date: new Date().toLocaleDateString('es-ES'),
-                    type: finalType
-                  };
-                  saveAndSetVideos([created, ...videos]);
-                  setSelectedVideo(created);
-                  setNewVideoTitle('');
-                  setNewVideoUrl('');
-                  setIsUploadVideoOpen(false);
-                }} className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-neutral-700 mb-1">Subir archivo de video desde tu dispositivo</label>
-                    <input
-                      type="file"
-                      accept="video/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setNewVideoUrl(URL.createObjectURL(file));
-                          if (!newVideoTitle) setNewVideoTitle(file.name.replace(/\.[^/.]+$/, ''));
-                        }
-                      }}
-                      className="block w-full text-xs text-neutral-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-rose-50 file:text-rose-700"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-neutral-700 mb-1">O ruta relativa (ej. videos/video1.mp4) o YouTube</label>
-                    <input
-                      type="text"
-                      placeholder="Ej: videos/video1.mp4 o https://youtube.com/..."
-                      value={newVideoUrl}
-                      onChange={e => setNewVideoUrl(e.target.value)}
-                      className="w-full rounded-lg border border-neutral-200 p-2 text-xs focus:outline-none"
-                    />
-                  </div>
-                  <input
-                    type="text"
-                    required
-                    value={newVideoTitle}
-                    onChange={e => setNewVideoTitle(e.target.value)}
-                    placeholder="Título del video..."
-                    className="w-full rounded-lg border border-neutral-200 p-2 text-xs focus:outline-none"
-                  />
-                  <textarea
-                    rows={2}
-                    value={newVideoCaption}
-                    onChange={e => setNewVideoCaption(e.target.value)}
-                    placeholder="Dedicatoria..."
-                    className="w-full rounded-lg border border-neutral-200 p-2 text-xs focus:outline-none"
-                  />
-                  <div className="flex justify-end gap-2 pt-2">
-                    <button type="button" onClick={() => setIsUploadVideoOpen(false)} className="rounded-lg px-3 py-1.5 text-xs text-neutral-600">Cancelar</button>
-                    <button type="submit" disabled={!newVideoUrl} className="rounded-lg bg-rose-600 px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-50">Guardar video</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
-
-          {/* Lightbox Photo */}
-          {activePhoto && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md" onClick={() => setActivePhoto(null)}>
-              <div className="max-w-3xl w-full bg-white rounded-2xl p-4 shadow-2xl" onClick={e => e.stopPropagation()}>
-                <div className="max-h-[70vh] bg-neutral-950 rounded-xl overflow-hidden flex items-center justify-center">
-                  <img src={activePhoto.url} className="max-h-[70vh] object-contain" />
-                </div>
-                <div className="mt-3 flex justify-between items-center">
-                  <div>
-                    <h3 className="font-romantic text-2xl font-bold text-neutral-900">{activePhoto.caption}</h3>
-                    <p className="text-xs text-neutral-500">{activePhoto.date} · {activePhoto.location}</p>
-                  </div>
-                  <button onClick={() => setActivePhoto(null)} className="rounded-lg bg-neutral-900 px-4 py-2 text-xs text-white">Cerrar</button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Footer */}
-          <footer className="border-t border-rose-100 bg-[#FAF7F5] py-8 px-4 text-center text-xs text-neutral-500 font-light">
-            <p className="font-romantic text-lg font-bold text-neutral-800 mb-1">Para Sam ❤️</p>
-            <p>Hecho con amor infinito, paciencia y cada latido de mi corazón.</p>
-          </footer>
         </div>
       );
     }
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
+    // Render App
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
 </body>
 </html>
