@@ -52,14 +52,12 @@
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
 
-    // Sintetizador de audio romántico estilo cajita musical
+    // Sintetizador de audio de respaldo estilo cajita musical
     class RomanticAudioSynth {
       constructor() {
         this.ctx = null;
         this.isPlaying = false;
         this.timer = null;
-        this.customAudio = null;
-        this.customUrl = localStorage.getItem('sam_song_url') || './cancion.mp3';
         this.notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 523.25, 587.33, 659.25];
         this.sequence = [
           [0, 2, 4, 6],
@@ -69,21 +67,6 @@
         ];
         this.seqIndex = 0;
         this.noteIndex = 0;
-        if (this.customUrl) {
-          this.setCustomSong(this.customUrl);
-        }
-      }
-      setCustomSong(url) {
-        if (this.customAudio) {
-          this.customAudio.pause();
-          this.customAudio = null;
-        }
-        this.customUrl = url;
-        if (url) {
-          this.customAudio = new Audio(url);
-          this.customAudio.loop = true;
-          this.customAudio.volume = 0.7;
-        }
       }
       init() {
         if (!this.ctx) {
@@ -118,28 +101,14 @@
         osc.stop(time + 1.6);
         oscHarmonic.stop(time + 1.6);
       }
-      toggle() {
-        if (this.isPlaying) {
-          this.pause();
-          return false;
-        } else {
-          this.play();
-          return true;
-        }
-      }
       play() {
-        if (this.customAudio) {
-          this.customAudio.play().catch(e => console.warn(e));
-          this.isPlaying = true;
-          return;
-        }
         this.init();
         if (this.ctx && this.ctx.state === 'suspended') {
           this.ctx.resume();
         }
         this.isPlaying = true;
         const tick = () => {
-          if (!this.isPlaying) return;
+          if (!this.isPlaying || !this.ctx) return;
           const currentChord = this.sequence[this.seqIndex];
           const noteOffset = currentChord[this.noteIndex % currentChord.length];
           const freq = this.notes[noteOffset % this.notes.length];
@@ -154,7 +123,6 @@
       }
       pause() {
         this.isPlaying = false;
-        if (this.customAudio) this.customAudio.pause();
         if (this.timer) clearTimeout(this.timer);
       }
     }
@@ -252,6 +220,13 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
       const [passwordInput, setPasswordInput] = useState('');
       const [passwordError, setPasswordError] = useState('');
       const [showPassword, setShowPassword] = useState(false);
+      const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+
+      // Reproductor de Audio Real HTML5
+      const audioRef = useRef(null);
+      const fileInputRef = useRef(null);
+      const [songName, setSongName] = useState(() => localStorage.getItem('sam_song_name') || 'cancion.mp3');
+      const [audioErrorMsg, setAudioErrorMsg] = useState('');
 
       // Datos principales con persistencia en localStorage
       const [letters, setLetters] = useState(() => {
@@ -286,7 +261,6 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
       const [isAddPhotoOpen, setIsAddPhotoOpen] = useState(false);
       const [isAddVideoOpen, setIsAddVideoOpen] = useState(false);
       const [currentQuoteNote, setCurrentQuoteNote] = useState(null);
-      const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
       // Formularios
       const [newLetterTitle, setNewLetterTitle] = useState('');
@@ -304,6 +278,51 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
       const [newVideoTitle, setNewVideoTitle] = useState('');
       const [newVideoUrl, setNewVideoUrl] = useState('');
       const [newVideoCaption, setNewVideoCaption] = useState('');
+
+      // Función para reproducir / pausar cancion.mp3
+      const handleToggleMusic = () => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        if (!audio.paused) {
+          audio.pause();
+          setIsMusicPlaying(false);
+        } else {
+          setAudioErrorMsg('');
+          const playPromise = audio.play();
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                setIsMusicPlaying(true);
+              })
+              .catch((err) => {
+                console.warn("Error al reproducir audio:", err);
+                setAudioErrorMsg("No se encontró 'cancion.mp3' en la misma carpeta que este archivo. Puedes seleccionarlo directamente con el botón 📂");
+                audioSynth.play();
+                setIsMusicPlaying(true);
+              });
+          }
+        }
+      };
+
+      // Selector de archivo local desde computadora o celular
+      const handleSelectFile = (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (file) {
+          const fileUrl = URL.createObjectURL(file);
+          setSongName(file.name);
+          localStorage.setItem('sam_song_name', file.name);
+          if (audioRef.current) {
+            audioRef.current.src = fileUrl;
+            audioRef.current.play()
+              .then(() => {
+                setIsMusicPlaying(true);
+                setAudioErrorMsg('');
+              })
+              .catch(err => console.warn(err));
+          }
+        }
+      };
 
       // 1. Estado de "¿Me extrañas?"
       const [missCount, setMissCount] = useState(() => parseInt(localStorage.getItem('sam_miss_count') || '0', 10));
@@ -345,7 +364,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
         }
       };
 
-      // 2. NUEVO ESTADO: Mensaje personalizado de Sam directo al correo
+      // 2. Mensaje personalizado de Sam directo al correo
       const [samMessage, setSamMessage] = useState('');
       const [samMood, setSamMood] = useState('❤️ Te amo mucho');
       const [isSendingSamMsg, setIsSendingSamMsg] = useState(false);
@@ -544,14 +563,15 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
               </nav>
               <div className="flex items-center gap-3">
                 <button
-                  onClick={() => setIsMusicPlaying(!isMusicPlaying)}
-                  className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${isMusicPlaying ? 'bg-rose-500 text-white animate-pulse' : 'bg-stone-100 text-stone-700'}`}
+                  type="button"
+                  onClick={handleToggleMusic}
+                  className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all cursor-pointer ${isMusicPlaying ? 'bg-rose-500 text-white animate-pulse shadow-md' : 'bg-stone-100 text-stone-700 hover:bg-rose-50'}`}
                 >
-                  {isMusicPlaying ? '🎶 Sonando Te Amo y Más' : '🎵 Poner Nuestra Canción'}
+                  {isMusicPlaying ? '🎶 Sonando: ' + songName : '🎵 Poner Nuestra Canción'}
                 </button>
                 <button
                   onClick={handleLock}
-                  className="rounded-lg border border-rose-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-rose-50"
+                  className="rounded-lg border border-rose-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-rose-50 cursor-pointer"
                 >
                   🔒 Bloquear
                 </button>
@@ -559,32 +579,71 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
             </div>
           </header>
 
-          {/* Reproductor Flotante */}
-          {isMusicPlaying && (
-            <div className="fixed bottom-4 right-4 z-50 flex items-center gap-3 rounded-full border border-rose-200 bg-white/95 py-2 px-4 shadow-xl backdrop-blur-md">
-              <span className="text-xl animate-spin" style={{ animationDuration: '3s' }}>💿</span>
+          {/* Elemento de Audio Real HTML5 y Selector de Archivo */}
+          <audio
+            ref={audioRef}
+            src="./cancion.mp3"
+            loop
+            preload="auto"
+            onError={() => {
+              console.warn("Aviso: No se encontró ./cancion.mp3");
+              setAudioErrorMsg("No se encontró el archivo './cancion.mp3' en la misma carpeta que index.html. Puedes seleccionarlo directamente con el botón 📂");
+            }}
+          />
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleSelectFile}
+            accept="audio/*"
+            className="hidden"
+          />
+
+          {/* Reproductor Flotante Interactivo */}
+          <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2">
+            {audioErrorMsg && (
+              <div className="max-w-xs rounded-2xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-900 shadow-xl text-left animate-bounce" style={{ animationIterationCount: 1 }}>
+                <p className="font-bold flex items-center gap-1 text-amber-800 mb-1">
+                  <span>⚠️</span> Archivo de música no encontrado
+                </p>
+                <p className="text-[11px] leading-relaxed mb-2">
+                  {audioErrorMsg}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current && fileInputRef.current.click()}
+                  className="rounded-lg bg-amber-600 px-3 py-1.5 text-[11px] font-bold text-white hover:bg-amber-700 transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                  <span>📂</span> Elegir archivo MP3 de mi computadora / cel
+                </button>
+              </div>
+            )}
+
+            <div className="flex items-center gap-3 rounded-full border border-rose-200 bg-white/95 py-2 px-4 shadow-xl backdrop-blur-md">
+              <span className={`text-xl ${isMusicPlaying ? 'animate-spin' : ''}`} style={{ animationDuration: '3s' }}>💿</span>
               <div className="text-left pr-2">
-                <p className="text-xs font-semibold text-neutral-800 line-clamp-1">Te amo y más (El Libro de la Vida)</p>
-                <p className="text-[10px] text-rose-500">Nuestra canción para Sam ❤️</p>
+                <p className="text-xs font-semibold text-neutral-800 line-clamp-1">{songName}</p>
+                <p className="text-[10px] text-rose-500 font-medium">
+                  {isMusicPlaying ? 'Reproduciendo para Sam ❤️' : 'Pausado'}
+                </p>
               </div>
               <button
-                onClick={() => setIsMusicPlaying(false)}
-                className="rounded-full bg-rose-50 p-1 text-xs text-rose-600 hover:bg-rose-100"
-                title="Pausar"
+                type="button"
+                onClick={handleToggleMusic}
+                className="rounded-full bg-rose-50 p-2 text-xs text-rose-600 hover:bg-rose-100 transition-all cursor-pointer"
+                title={isMusicPlaying ? 'Pausar' : 'Reproducir'}
               >
-                ⏸️
+                {isMusicPlaying ? '⏸️' : '▶️'}
               </button>
-              <div className="hidden">
-                <iframe
-                  width="100"
-                  height="100"
-                  src="https://www.youtube.com/embed/QAItMep0GiA?autoplay=1&loop=1&playlist=QAItMep0GiA&enablejsapi=1"
-                  title="YouTube audio"
-                  allow="autoplay"
-                />
-              </div>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current && fileInputRef.current.click()}
+                className="rounded-full bg-stone-100 p-2 text-xs text-stone-600 hover:bg-stone-200 transition-all cursor-pointer"
+                title="Elegir o cambiar canción"
+              >
+                📂
+              </button>
             </div>
-          )}
+          </div>
 
           {/* CONTENIDO PRINCIPAL */}
           <main className="flex-1">
@@ -783,7 +842,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                 </div>
                 <button
                   onClick={() => setIsWriteLetterOpen(true)}
-                  className="rounded-xl bg-neutral-900 px-4 py-2 text-xs font-medium text-white hover:bg-neutral-800 self-start"
+                  className="rounded-xl bg-neutral-900 px-4 py-2 text-xs font-medium text-white hover:bg-neutral-800 self-start cursor-pointer"
                 >
                   ✍️ Escribir nueva carta
                 </button>
@@ -849,13 +908,13 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                   <div className="mt-6 flex gap-3">
                     <button
                       onClick={pullQuoteFromJar}
-                      className="rounded-xl bg-rose-600 px-6 py-2.5 text-xs font-semibold text-white shadow-md hover:bg-rose-700 transition-all"
+                      className="rounded-xl bg-rose-600 px-6 py-2.5 text-xs font-semibold text-white shadow-md hover:bg-rose-700 transition-all cursor-pointer"
                     >
                       🪄 Sacar una frase
                     </button>
                     <button
                       onClick={() => setIsAddQuoteOpen(true)}
-                      className="rounded-xl border border-rose-200 bg-white px-4 py-2.5 text-xs font-semibold text-neutral-700 hover:bg-rose-50"
+                      className="rounded-xl border border-rose-200 bg-white px-4 py-2.5 text-xs font-semibold text-neutral-700 hover:bg-rose-50 cursor-pointer"
                     >
                       + Añadir frase
                     </button>
@@ -886,7 +945,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                 </div>
                 <button
                   onClick={() => setIsAddPhotoOpen(true)}
-                  className="rounded-xl bg-neutral-900 px-4 py-2 text-xs font-medium text-white hover:bg-neutral-800 self-start"
+                  className="rounded-xl bg-neutral-900 px-4 py-2 text-xs font-medium text-white hover:bg-neutral-800 self-start cursor-pointer"
                 >
                   📷 Subir nueva foto
                 </button>
@@ -927,7 +986,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                 </div>
                 <button
                   onClick={() => setIsAddVideoOpen(true)}
-                  className="rounded-xl bg-neutral-900 px-4 py-2 text-xs font-medium text-white hover:bg-neutral-800 self-start"
+                  className="rounded-xl bg-neutral-900 px-4 py-2 text-xs font-medium text-white hover:bg-neutral-800 self-start cursor-pointer"
                 >
                   🎥 Añadir nuevo video
                 </button>
@@ -966,7 +1025,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
               <div className="w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-3xl letter-paper border-2 border-rose-300 p-8 shadow-2xl relative text-left">
                 <button
                   onClick={() => setSelectedLetter(null)}
-                  className="absolute top-4 right-4 rounded-full bg-white/80 p-2 text-neutral-500 hover:text-neutral-800 text-xs shadow-sm"
+                  className="absolute top-4 right-4 rounded-full bg-white/80 p-2 text-neutral-500 hover:text-neutral-800 text-xs shadow-sm cursor-pointer"
                 >
                   ✕ Cerrar
                 </button>
@@ -1044,7 +1103,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                       setIsWriteLetterOpen(false);
                       confetti({ particleCount: 50, spread: 70 });
                     }}
-                    className="w-full rounded-xl bg-rose-600 py-3 text-xs font-semibold text-white hover:bg-rose-700"
+                    className="w-full rounded-xl bg-rose-600 py-3 text-xs font-semibold text-white hover:bg-rose-700 cursor-pointer"
                   >
                     Guardar carta 💕
                   </button>
@@ -1094,7 +1153,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                       setIsAddQuoteOpen(false);
                       confetti({ particleCount: 40, spread: 60 });
                     }}
-                    className="w-full rounded-xl bg-rose-600 py-3 text-xs font-semibold text-white hover:bg-rose-700"
+                    className="w-full rounded-xl bg-rose-600 py-3 text-xs font-semibold text-white hover:bg-rose-700 cursor-pointer"
                   >
                     Meter al frasco ✨
                   </button>
@@ -1169,7 +1228,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                       setIsAddPhotoOpen(false);
                       confetti({ particleCount: 50, spread: 70 });
                     }}
-                    className="w-full rounded-xl bg-rose-600 py-3 text-xs font-semibold text-white hover:bg-rose-700"
+                    className="w-full rounded-xl bg-rose-600 py-3 text-xs font-semibold text-white hover:bg-rose-700 cursor-pointer"
                   >
                     Guardar foto 📸
                   </button>
@@ -1234,7 +1293,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                       setIsAddVideoOpen(false);
                       confetti({ particleCount: 50, spread: 70 });
                     }}
-                    className="w-full rounded-xl bg-rose-600 py-3 text-xs font-semibold text-white hover:bg-rose-700"
+                    className="w-full rounded-xl bg-rose-600 py-3 text-xs font-semibold text-white hover:bg-rose-700 cursor-pointer"
                   >
                     Guardar video 🎥
                   </button>
