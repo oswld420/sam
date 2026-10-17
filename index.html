@@ -52,10 +52,39 @@
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
 
-    // URLs de audio web streaming directo (CORS habilitado, alta calidad, sin requerir archivo local)
+    // URL de audio en streaming web directo (El Libro de la Vida - Te Amo y Más por Diego Luna)
     const DEFAULT_SONG_URL = "https://cdn.jsdelivr.net/gh/luisfernandoumiriflores-art/Te-amo-y-mas.@main/El%20Libro%20De%20La%20Vida%20-%20Te%20Amo%20Y%20M%C3%A1s%20%28By_%20Diego%20Luna%29%20%28Letra%29.mp3";
     const BACKUP_SONG_URL = "https://raw.githubusercontent.com/luisfernandoumiriflores-art/Te-amo-y-mas./main/El%20Libro%20De%20La%20Vida%20-%20Te%20Amo%20Y%20M%C3%A1s%20%28By_%20Diego%20Luna%29%20%28Letra%29.mp3";
-    const ALTERNATIVE_SONG_URL = "https://cdn.jsdelivr.net/gh/scarpion7/perfect.mp3@main/perfect.mp3";
+
+    // Papelitos decorativos doblados que llenan visualmente el frasco de amor
+    const JAR_DECORATIVE_PAPERS = [
+      { text: 'Te amo ❤️', color: 'bg-rose-200 text-rose-800 border-rose-300', rot: '-rotate-12', left: '12%', bottom: '5%' },
+      { text: 'Eres mi todo ✨', color: 'bg-amber-100 text-amber-900 border-amber-200', rot: 'rotate-6', left: '42%', bottom: '4%' },
+      { text: 'Mi princesa 👑', color: 'bg-pink-200 text-pink-800 border-pink-300', rot: '-rotate-45', left: '68%', bottom: '6%' },
+      { text: 'Sam 💕', color: 'bg-purple-200 text-purple-900 border-purple-300', rot: 'rotate-12', left: '24%', bottom: '13%' },
+      { text: 'Por siempre 🔒', color: 'bg-red-200 text-red-800 border-red-300', rot: '-rotate-6', left: '52%', bottom: '12%' },
+      { text: 'Mi cielo ☁️', color: 'bg-emerald-100 text-emerald-900 border-emerald-200', rot: 'rotate-45', left: '76%', bottom: '14%' },
+      { text: 'Tu risa 😊', color: 'bg-yellow-200 text-yellow-900 border-yellow-300', rot: '-rotate-12', left: '8%', bottom: '22%' },
+      { text: 'Amor mío ❤️', color: 'bg-rose-300 text-rose-900 border-rose-400', rot: 'rotate-12', left: '36%', bottom: '21%' },
+      { text: 'Abrazos 🧸', color: 'bg-orange-100 text-orange-900 border-orange-200', rot: '-rotate-6', left: '64%', bottom: '23%' },
+      { text: 'Besito 💋', color: 'bg-pink-100 text-pink-900 border-pink-200', rot: 'rotate-6', left: '16%', bottom: '31%' },
+      { text: 'Juntos 💕', color: 'bg-indigo-100 text-indigo-900 border-indigo-200', rot: '-rotate-12', left: '46%', bottom: '30%' },
+      { text: 'Mi tesoro 💎', color: 'bg-rose-100 text-rose-800 border-rose-200', rot: 'rotate-45', left: '74%', bottom: '32%' },
+      { text: 'Te elijo a ti 🌟', color: 'bg-amber-200 text-amber-900 border-amber-300', rot: 'rotate-12', left: '10%', bottom: '40%' },
+      { text: 'Mi vida ❤️', color: 'bg-pink-300 text-pink-950 border-pink-400', rot: '-rotate-45', left: '38%', bottom: '39%' },
+      { text: 'Eternidad 🌸', color: 'bg-violet-100 text-violet-900 border-violet-200', rot: 'rotate-6', left: '68%', bottom: '41%' },
+      { text: 'Mi paz 🕊️', color: 'bg-teal-100 text-teal-900 border-teal-200', rot: '-rotate-12', left: '22%', bottom: '48%' },
+      { text: 'Mi lugar seguro 🏡', color: 'bg-rose-200 text-rose-800 border-rose-300', rot: 'rotate-12', left: '54%', bottom: '47%' },
+      { text: 'Siempre tú 💖', color: 'bg-yellow-100 text-yellow-900 border-yellow-200', rot: '-rotate-6', left: '8%', bottom: '56%' },
+      { text: 'Mi sueño ❤️', color: 'bg-rose-300 text-rose-950 border-rose-400', rot: 'rotate-45', left: '36%', bottom: '55%' },
+      { text: 'Te amo y más 🎶', color: 'bg-fuchsia-100 text-fuchsia-900 border-fuchsia-200', rot: '-rotate-12', left: '66%', bottom: '57%' },
+      { text: 'Eres magia ✨', color: 'bg-pink-200 text-pink-800 border-pink-300', rot: 'rotate-12', left: '18%', bottom: '65%' },
+      { text: 'Mi niña hermosa 🌹', color: 'bg-amber-100 text-amber-900 border-amber-200', rot: '-rotate-45', left: '48%', bottom: '64%' },
+      { text: 'Dulce amor 🍯', color: 'bg-rose-200 text-rose-800 border-rose-300', rot: 'rotate-6', left: '12%', bottom: '72%' },
+      { text: 'Tuyo por siempre 💌', color: 'bg-purple-100 text-purple-900 border-purple-200', rot: '-rotate-12', left: '42%', bottom: '71%' },
+      { text: 'Amor puro 💫', color: 'bg-orange-200 text-orange-900 border-orange-300', rot: 'rotate-12', left: '70%', bottom: '73%' },
+      { text: 'Para Sam ❤️', color: 'bg-rose-300 text-rose-950 border-rose-400 font-bold', rot: '-rotate-6', left: '28%', bottom: '79%' }
+    ];
 
     // Default Seed Data
     const INITIAL_LETTERS = [
@@ -94,6 +123,11 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
       }
     ];
 
+    // =========================================================================
+    // 💌 FRASES DEL FRASCO (AGREGA, QUITA O EDITA TUS FRASES DIRECTAMENTE AQUÍ)
+    // Puedes agregar tantas como quieras copiando y pegando una línea:
+    // { id: '11', text: 'Aquí escribes tu nueva frase...', tag: 'Amor' },
+    // =========================================================================
     const INITIAL_QUOTES = [
       { id: '1', text: 'Si tuviera que elegirte de nuevo entre un millón de vidas, te elegiría en cada una sin dudarlo.', tag: 'Eternidad' },
       { id: '2', text: 'Tu sonrisa es mi notificación favorita y la cura perfecta para cualquier mal día.', tag: 'Felicidad' },
@@ -107,11 +141,23 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
       { id: '10', text: 'Un recordatorio rápido por si se te olvidaba: ¡Eres la persona más hermosa del universo entero!', tag: 'Mimos' }
     ];
 
+    // =========================================================================
+    // 📸 TUS FOTOS CON SAM (CÓMO METER TUS FOTOS EN EL CÓDIGO):
+    //
+    // OPCIÓN 1 (Fotos Locales - Recomendada):
+    // Crea una carpeta llamada "fotos" al lado de este archivo index.html.
+    // Guarda tus fotos con nombres como "foto1.jpg", "foto2.jpg", "foto3.jpg".
+    // En 'url' pones: 'fotos/foto1.jpg'
+    //
+    // OPCIÓN 2 (Enlaces de Internet):
+    // Puedes subir tus fotos a Imgur, Google Fotos o cualquier página y poner
+    // el enlace directo aquí en 'url' (ej: 'https://i.imgur.com/tu_foto.jpg')
+    // =========================================================================
     const INITIAL_PHOTOS = [
       {
         id: '1',
-        url: 'foto1.jpg',
-        fallbackUrl: 'foto1.jpg',
+        url: 'fotos/foto1.jpg',
+        fallbackUrl: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80',
         caption: 'Nuestras manos entrelazadas: el lugar perfecto donde pertenezco.',
         date: 'Un atardecer contigo',
         location: 'Nuestro rincón favorito'
@@ -159,12 +205,10 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
       const [passwordError, setPasswordError] = useState('');
       const [showPassword, setShowPassword] = useState(false);
       const [isMusicPlaying, setIsMusicPlaying] = useState(false);
-      const [songUrl, setSongUrl] = useState(() => localStorage.getItem('sam_song_url') || DEFAULT_SONG_URL);
-      const [songTitle, setSongTitle] = useState(() => localStorage.getItem('sam_song_title') || 'Te amo y más (Diego Luna)');
+      const [songUrl, setSongUrl] = useState(DEFAULT_SONG_URL);
+      const songTitle = 'Te amo y más (Diego Luna)';
       const [musicVolume, setMusicVolume] = useState(0.85);
       const [isMuted, setIsMuted] = useState(false);
-      const [showMusicMenu, setShowMusicMenu] = useState(false);
-      const [customUrlInput, setCustomUrlInput] = useState('');
       const audioRef = useRef(null);
 
       // Sincronizar volumen con el elemento audio
@@ -179,14 +223,10 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
         const saved = localStorage.getItem('sam_letters');
         return saved ? JSON.parse(saved) : INITIAL_LETTERS;
       });
-      const [quotes, setQuotes] = useState(() => {
-        const saved = localStorage.getItem('sam_quotes');
-        return saved ? JSON.parse(saved) : INITIAL_QUOTES;
-      });
-      const [photos, setPhotos] = useState(() => {
-        const saved = localStorage.getItem('sam_photos');
-        return saved ? JSON.parse(saved) : INITIAL_PHOTOS;
-      });
+      // Las frases del frasco se toman directamente del código para que Sam las lea
+      const quotes = INITIAL_QUOTES;
+      // Las fotos se leen directamente del código (o agregadas en sesión)
+      const [photos, setPhotos] = useState(INITIAL_PHOTOS);
       const [videos, setVideos] = useState(() => {
         const saved = localStorage.getItem('sam_videos');
         return saved ? JSON.parse(saved) : INITIAL_VIDEOS;
@@ -199,7 +239,6 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
       const [selectedLetter, setSelectedLetter] = useState(null);
       const [isWriteLetterOpen, setIsWriteLetterOpen] = useState(false);
       const [currentQuoteNote, setCurrentQuoteNote] = useState(null);
-      const [isManageQuotesOpen, setIsManageQuotesOpen] = useState(false);
       const [activePhoto, setActivePhoto] = useState(null);
       const [isUploadPhotoOpen, setIsUploadPhotoOpen] = useState(false);
       const [selectedVideo, setSelectedVideo] = useState(videos[0]);
@@ -209,10 +248,6 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
       const [newLetterTitle, setNewLetterTitle] = useState('');
       const [newLetterCategory, setNewLetterCategory] = useState('romantica');
       const [newLetterContent, setNewLetterContent] = useState('');
-
-      // New quote form
-      const [newQuoteText, setNewQuoteText] = useState('');
-      const [newQuoteTag, setNewQuoteTag] = useState('Para Sam');
 
       // New photo form
       const [newPhotoCaption, setNewPhotoCaption] = useState('');
@@ -372,27 +407,6 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
         }
       };
 
-      const selectSong = (url, title) => {
-        const audio = audioRef.current;
-        if (audio) {
-          audio.pause();
-        }
-        setIsMusicPlaying(false);
-        setSongUrl(url);
-        setSongTitle(title);
-        localStorage.setItem('sam_song_url', url);
-        localStorage.setItem('sam_song_title', title);
-        setShowMusicMenu(false);
-        setTimeout(() => {
-          if (audioRef.current) {
-            audioRef.current.load();
-            audioRef.current.play()
-              .then(() => setIsMusicPlaying(true))
-              .catch(e => console.warn("Auto-play blocked:", e));
-          }
-        }, 150);
-      };
-
       const pullQuoteFromJar = () => {
         if (!quotes.length) return;
         confetti({
@@ -409,10 +423,6 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
       const saveAndSetLetters = (arr) => {
         setLetters(arr);
         localStorage.setItem('sam_letters', JSON.stringify(arr));
-      };
-      const saveAndSetQuotes = (arr) => {
-        setQuotes(arr);
-        localStorage.setItem('sam_quotes', JSON.stringify(arr));
       };
       const saveAndSetPhotos = (arr) => {
         setPhotos(arr);
@@ -523,7 +533,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
             </div>
           </header>
 
-          {/* Elemento de Audio Real - Jalado desde la Web (sin depender de archivos locales) */}
+          {/* Elemento de Audio Real - Streaming Web Directo de Te amo y más */}
           <audio
             ref={audioRef}
             src={songUrl}
@@ -533,94 +543,15 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
             onPause={() => setIsMusicPlaying(false)}
             onEnded={() => setIsMusicPlaying(false)}
             onError={(e) => {
-              console.warn("Fallo cargando audio web principal, cambiando a enlace alternativo...");
+              console.warn("Cambiando a enlace alternativo de respaldo...");
               if (songUrl === DEFAULT_SONG_URL) {
                 setSongUrl(BACKUP_SONG_URL);
               }
             }}
           />
 
-          {/* Reproductor Flotante Moderno con Control Web */}
+          {/* Reproductor Flotante Romántico Fijo en Nuestra Canción */}
           <div className="fixed bottom-4 right-4 z-50">
-            {/* Popover selector de canciones */}
-            {showMusicMenu && (
-              <div className="mb-2 w-72 rounded-2xl border border-rose-200 bg-white/95 p-4 shadow-2xl backdrop-blur-md animate-fadeIn text-left text-xs">
-                <div className="flex items-center justify-between pb-2 border-b border-rose-100 mb-2">
-                  <span className="font-semibold text-neutral-800">Canción para Sam</span>
-                  <button
-                    onClick={() => setShowMusicMenu(false)}
-                    className="text-neutral-400 hover:text-neutral-600 text-sm font-bold"
-                  >
-                    ✕
-                  </button>
-                </div>
-                <p className="text-[11px] text-neutral-500 mb-2">
-                  Reproduciendo directamente desde la web (sin descargar archivos):
-                </p>
-                <div className="space-y-1.5">
-                  <button
-                    type="button"
-                    onClick={() => selectSong(DEFAULT_SONG_URL, 'Te amo y más (Diego Luna)')}
-                    className={`w-full text-left p-2 rounded-xl transition-all flex items-center justify-between ${
-                      songUrl === DEFAULT_SONG_URL ? 'bg-rose-100 text-rose-800 font-semibold' : 'hover:bg-rose-50 text-neutral-700'
-                    }`}
-                  >
-                    <span>🎶 Te amo y más - Diego Luna</span>
-                    {songUrl === DEFAULT_SONG_URL && <span className="text-rose-600">✓</span>}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => selectSong(ALTERNATIVE_SONG_URL, 'Perfect - Ed Sheeran')}
-                    className={`w-full text-left p-2 rounded-xl transition-all flex items-center justify-between ${
-                      songUrl === ALTERNATIVE_SONG_URL ? 'bg-rose-100 text-rose-800 font-semibold' : 'hover:bg-rose-50 text-neutral-700'
-                    }`}
-                  >
-                    <span>✨ Perfect - Ed Sheeran</span>
-                    {songUrl === ALTERNATIVE_SONG_URL && <span className="text-rose-600">✓</span>}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => selectSong('cancion.mp3', 'cancion.mp3 (Archivo local)')}
-                    className={`w-full text-left p-2 rounded-xl transition-all flex items-center justify-between ${
-                      songUrl === 'cancion.mp3' ? 'bg-rose-100 text-rose-800 font-semibold' : 'hover:bg-rose-50 text-neutral-700'
-                    }`}
-                  >
-                    <span>📁 cancion.mp3 (Local)</span>
-                    {songUrl === 'cancion.mp3' && <span className="text-rose-600">✓</span>}
-                  </button>
-                </div>
-
-                {/* Entrada de URL personalizada */}
-                <div className="mt-3 pt-2 border-t border-rose-100">
-                  <label className="block text-[10px] uppercase font-bold text-neutral-400 mb-1">
-                    O pega un enlace web (.mp3):
-                  </label>
-                  <div className="flex gap-1.5">
-                    <input
-                      type="url"
-                      placeholder="https://...cancion.mp3"
-                      value={customUrlInput}
-                      onChange={(e) => setCustomUrlInput(e.target.value)}
-                      className="flex-1 rounded-lg border border-neutral-200 px-2 py-1 text-[11px] focus:outline-none focus:border-rose-400"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (customUrlInput.trim()) {
-                          selectSong(customUrlInput.trim(), 'Canción personalizada');
-                          setCustomUrlInput('');
-                        }
-                      }}
-                      className="rounded-lg bg-rose-500 px-2 py-1 text-[11px] font-semibold text-white hover:bg-rose-600"
-                    >
-                      Usar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Barra flotante principal */}
             <div className="flex items-center gap-2.5 rounded-full border border-rose-200 bg-white/95 py-2 px-3.5 shadow-xl backdrop-blur-md">
               <span
                 className={`text-xl select-none transition-transform duration-1000 ${isMusicPlaying ? 'animate-spin' : ''}`}
@@ -628,16 +559,16 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
               >
                 💿
               </span>
-              <div className="text-left pr-1 max-w-[150px] sm:max-w-[180px]">
-                <p className="text-xs font-semibold text-neutral-800 truncate" title={songTitle}>
-                  {songTitle}
+              <div className="text-left pr-1 max-w-[150px] sm:max-w-[200px]">
+                <p className="text-xs font-semibold text-neutral-800 truncate" title="Te amo y más - Diego Luna">
+                  Te amo y más (Diego Luna)
                 </p>
                 <p className="text-[10px] text-rose-500 font-medium">
                   {isMusicPlaying ? 'Reproduciendo para Sam ❤️' : 'Pausado'}
                 </p>
               </div>
 
-              {/* Boton Pausa / Play */}
+              {/* Botón Pausa / Play */}
               <button
                 type="button"
                 onClick={handleToggleMusic}
@@ -647,7 +578,7 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                 {isMusicPlaying ? '⏸️' : '▶️'}
               </button>
 
-              {/* Boton Silenciar / Activar sonido */}
+              {/* Botón Silenciar / Activar sonido */}
               <button
                 type="button"
                 onClick={() => setIsMuted(!isMuted)}
@@ -655,16 +586,6 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                 title={isMuted ? 'Activar sonido' : 'Silenciar'}
               >
                 {isMuted ? '🔇' : '🔊'}
-              </button>
-
-              {/* Boton Ajustes / Cambiar canción */}
-              <button
-                type="button"
-                onClick={() => setShowMusicMenu(!showMusicMenu)}
-                className="rounded-full bg-stone-50 p-2 text-xs text-stone-500 hover:bg-rose-50 hover:text-rose-600 active:scale-95 transition-all cursor-pointer"
-                title="Cambiar o configurar canción"
-              >
-                ⚙️
               </button>
             </div>
           </div>
@@ -915,29 +836,68 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                   Cada vez que piques el botón, saldrá un papelito mágico con una frase o pensamiento de amor escrito especialmente para ti.
                 </p>
 
-                {/* Jar Graphic */}
-                <div className="relative mx-auto w-64 h-80 rounded-b-[48px] rounded-t-[28px] border-4 border-white bg-gradient-to-b from-white/50 via-rose-50/40 to-rose-100/50 jar-glow p-4 flex flex-col justify-end shadow-xl">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-8 rounded-t-xl bg-[#8D6E63] text-[10px] uppercase font-mono tracking-widest text-white flex items-center justify-center">
-                    Frasco de Amor
+                {/* Gráfico de Frasco Romántico Lleno de Notas */}
+                <div className="relative mx-auto w-72 h-[390px] select-none my-4">
+                  {/* Tapa de Corcho con Cuerda Rústica */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center">
+                    {/* Corcho superior */}
+                    <div className="w-40 h-7 rounded-t-lg bg-gradient-to-r from-[#8C6D58] via-[#B8977E] to-[#7D5E4A] shadow-md border-b border-[#5E4230]" />
+                    {/* Cuello del frasco con cuerda y etiqueta */}
+                    <div className="w-52 h-5 bg-white/70 border-x-4 border-white/90 backdrop-blur-sm relative flex items-center justify-center">
+                      <div className="w-full h-1.5 bg-[#C2A68D] shadow-inner" />
+                      {/* Corazón colgante de madera / etiqueta */}
+                      <div className="absolute -bottom-3 left-8 z-30 rounded-full bg-rose-500 text-white text-[11px] px-2.5 py-0.5 shadow-md flex items-center gap-1 font-semibold animate-pulse">
+                        <span>🏷️</span>
+                        <span>Para Sam</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="relative z-10 mx-auto mb-3 rounded-lg bg-white/95 px-4 py-1.5 shadow-sm border border-rose-200">
-                    <span className="font-script text-lg text-rose-600 block leading-tight">Para Sam</span>
-                    <span className="text-[10px] text-neutral-500 font-mono">{quotes.length} frases guardadas</span>
+
+                  {/* Cuerpo de Vidrio del Frasco */}
+                  <div className="absolute bottom-0 left-0 right-0 top-10 rounded-b-[54px] rounded-t-[20px] border-4 border-white/80 bg-gradient-to-b from-white/45 via-rose-50/20 to-rose-100/50 jar-glow shadow-2xl overflow-hidden backdrop-blur-sm">
+                    {/* Brillo y Reflejo Curvo del Vidrio */}
+                    <div className="absolute top-2 left-3 w-4 h-[94%] bg-gradient-to-r from-white/60 to-transparent rounded-full opacity-70 pointer-events-none z-20" />
+                    <div className="absolute top-4 right-3 w-2 h-[88%] bg-white/40 rounded-full pointer-events-none z-20" />
+
+                    {/* Papelitos decorativos de amor que LLENAN el frasco hasta arriba */}
+                    <div className="absolute inset-0 pointer-events-none">
+                      {JAR_DECORATIVE_PAPERS.map((p, idx) => (
+                        <div
+                          key={idx}
+                          className={`absolute ${p.rot} ${p.color} border px-2 py-0.5 rounded-lg text-[10px] font-medium shadow-sm flex items-center gap-1 whitespace-nowrap`}
+                          style={{ left: p.left, bottom: p.bottom }}
+                        >
+                          <span>{p.text}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Efecto de destellos mágicos flotantes */}
+                    <div className="absolute top-8 left-1/4 text-rose-300 text-xs animate-ping pointer-events-none">✨</div>
+                    <div className="absolute top-1/3 right-8 text-amber-300 text-xs animate-pulse pointer-events-none">⭐</div>
+                    <div className="absolute bottom-16 right-1/4 text-pink-400 text-xs animate-bounce pointer-events-none">💕</div>
+
+                    {/* Etiqueta central vintage en el frasco */}
+                    <div className="absolute top-[38%] left-1/2 -translate-x-1/2 z-20 w-[84%] rounded-2xl bg-white/95 px-3 py-2.5 shadow-lg border border-rose-200 text-center backdrop-blur-md pointer-events-none">
+                      <span className="font-script text-2xl text-rose-600 block leading-tight">Frasco de Amor</span>
+                      <span className="font-romantic text-xs font-semibold text-neutral-800 block">Lleno de frases y promesas para ti</span>
+                      <div className="mt-1 flex items-center justify-center gap-1 text-[11px] text-rose-500 font-semibold">
+                        <span>💌</span>
+                        <span>{quotes.length} frases para hacerte sonreír</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="mt-8 flex flex-wrap justify-center gap-3">
+                {/* Botón único para sacar una frase (sin botones de gestión) */}
+                <div className="mt-8 flex justify-center">
                   <button
                     onClick={pullQuoteFromJar}
-                    className="rounded-xl bg-gradient-to-r from-rose-500 via-rose-600 to-rose-700 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-rose-500/25 hover:scale-105 active:scale-95 transition-all"
+                    className="rounded-2xl bg-gradient-to-r from-rose-500 via-rose-600 to-rose-700 px-8 py-4 text-base font-semibold text-white shadow-xl shadow-rose-500/25 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
                   >
-                    ✨ Sacar una frase del frasco
-                  </button>
-                  <button
-                    onClick={() => setIsManageQuotesOpen(true)}
-                    className="rounded-xl border border-rose-200 bg-white px-4 py-3.5 text-xs font-medium text-neutral-700 hover:bg-rose-50"
-                  >
-                    ✍️ Escribir frases ({quotes.length})
+                    <span className="text-xl">✨</span>
+                    <span>Sacar una frase del frasco</span>
+                    <span className="text-xl">💌</span>
                   </button>
                 </div>
               </div>
@@ -1129,51 +1089,6 @@ Prometo no dejar de recordarte lo hermosa que estás, ni cansarme de decirte "te
                     <button type="submit" className="rounded-xl bg-rose-600 px-5 py-2 text-xs font-semibold text-white hover:bg-rose-700">Guardar carta</button>
                   </div>
                 </form>
-              </div>
-            </div>
-          )}
-
-          {/* Modal Manage Quotes */}
-          {isManageQuotesOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setIsManageQuotesOpen(false)}>
-              <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl border border-rose-100" onClick={e => e.stopPropagation()}>
-                <h3 className="font-romantic text-2xl font-bold text-neutral-900 mb-4">Frases del Frasco ({quotes.length})</h3>
-                <form onSubmit={(e) => {
-                  e.preventDefault();
-                  if (!newQuoteText) return;
-                  saveAndSetQuotes([{ id: String(Date.now()), text: newQuoteText, tag: newQuoteTag }, ...quotes]);
-                  setNewQuoteText('');
-                }} className="mb-4 space-y-2 bg-rose-50 p-3 rounded-xl">
-                  <textarea
-                    required
-                    rows={2}
-                    value={newQuoteText}
-                    onChange={e => setNewQuoteText(e.target.value)}
-                    placeholder="Escribe una nueva frase para el frasco..."
-                    className="w-full rounded-lg border border-rose-200 p-2 text-xs focus:outline-none"
-                  />
-                  <div className="flex justify-between gap-2">
-                    <input
-                      type="text"
-                      value={newQuoteTag}
-                      onChange={e => setNewQuoteTag(e.target.value)}
-                      placeholder="Etiqueta..."
-                      className="rounded-lg border border-rose-200 px-2 py-1 text-xs"
-                    />
-                    <button type="submit" className="rounded-lg bg-rose-600 px-4 py-1 text-xs font-semibold text-white">Meter al frasco</button>
-                  </div>
-                </form>
-                <div className="max-h-48 overflow-y-auto space-y-1.5">
-                  {quotes.map(q => (
-                    <div key={q.id} className="flex justify-between items-center p-2 rounded border border-neutral-100 text-xs">
-                      <span className="truncate pr-2 italic">“{q.text}”</span>
-                      <button onClick={() => saveAndSetQuotes(quotes.filter(item => item.id !== q.id))} className="text-neutral-400 hover:text-red-500">🗑️</button>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex justify-end pt-4">
-                  <button onClick={() => setIsManageQuotesOpen(false)} className="rounded-lg bg-neutral-900 px-4 py-1.5 text-xs text-white">Listo</button>
-                </div>
               </div>
             </div>
           )}
