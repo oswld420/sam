@@ -1,312 +1,861 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Te amo Sam ❤️</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="iconoo.avif" type="image/x-icon">
+  <title>S y O ❤️</title>
+  <meta name="description" content="web para el amor de mi vida">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
   <style>
-    :root {
-      --rosa-1: #fff4f6;
-      --rosa-2: #ffe3ea;
-      --rosa-3: #ffc9d7;
-      --rosa-4: #ff9bb5;
-      --rosa-5: #f75d8e;
-      --marron: #3f2d2d;
-      --blanco: #ffffff;
-      --gris: #6f5d5d;
-    }
-
-    * { box-sizing: border-box; }
-
     html {
       scroll-behavior: smooth;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
     }
-
     body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: var(--rosa-2);
-      color: var(--marron);
+      overflow-x: hidden;
+    }
+    .font-romantic {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+    }
+    .font-script {
+      font-family: 'Alex Brush', cursive;
+    }
+    .letter-paper {
+      background-color: #FAF5EE;
+      background-image: radial-gradient(#E8DCCD 0.75px, transparent 0.75px);
+      background-size: 16px 16px;
+    }
+    .jar-glow {
+      box-shadow: 0 0 35px rgba(254, 205, 211, 0.6), inset 0 0 25px rgba(255, 255, 255, 0.6);
+    }
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(2deg); }
+    }
+    .animate-float {
+      animation: floatSlow 4s ease-in-out infinite;
     }
 
-    a { text-decoration: none; }
-
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 20px;
+    .slide-section {
+      opacity: 0;
+      transform: translateX(70px);
+      transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
     }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      background: rgba(255, 227, 234, 0.9);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(247, 93, 142, 0.2);
+    .slide-section.slide-visible {
+      opacity: 1;
+      transform: translateX(0);
     }
-
-    .topbar-inner {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      min-height: 72px;
-      gap: 18px;
-    }
-
-    .brand {
-      font-size: clamp(1.2rem, 2vw, 2rem);
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      color: var(--marron);
-    }
-
-    .nav {
-      display: flex;
-      gap: 24px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .nav a {
-      color: var(--gris);
-      font-weight: 600;
-    }
-
-    .nav a:hover {
-      color: var(--rosa-5);
-    }
-
-    .btn {
-      display: inline-block;
-      background: linear-gradient(135deg, var(--rosa-5), #f75d8e);
-      color: var(--blanco);
-      padding: 12px 20px;
-      border-radius: 999px;
-      font-weight: 700;
-      box-shadow: 0 10px 25px rgba(247, 93, 142, 0.25);
-    }
-
-    .hero {
-      padding: 60px 0 30px;
-      text-align: center;
-    }
-
-    .eyebrow {
-      color: var(--rosa-5);
-      font-size: 1.1rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-
-    h1 {
-      font-size: clamp(2.4rem, 5vw, 5rem);
-      line-height: 1.04;
-      margin: 0;
-      color: var(--marron);
-    }
-
-    .sub {
-      max-width: 760px;
-      margin: 18px auto 0;
-      font-size: 1.08rem;
-      line-height: 1.8;
-      color: var(--gris);
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 22px;
-      margin-top: 32px;
-    }
-
-    .card {
-      background: rgba(255, 255, 255, 0.8);
-      border: 1px solid rgba(247, 93, 142, 0.18);
-      border-radius: 24px;
-      padding: 26px 20px;
-      box-shadow: 0 14px 30px rgba(247, 93, 142, 0.08);
-    }
-
-    .card h3 {
-      margin: 0 0 14px;
-      font-size: 1.5rem;
-      color: var(--marron);
-    }
-
-    .card p {
-      margin: 0;
-      color: var(--gris);
-      line-height: 1.8;
-    }
-
-    .section {
-      padding: 42px 0;
-    }
-
-    .section-title {
-      text-align: center;
-      font-size: clamp(2rem, 3vw, 3rem);
-      margin-bottom: 26px;
-    }
-
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 16px;
-    }
-
-    .photo {
-      height: 220px;
-      border-radius: 20px;
-      background: linear-gradient(135deg, #ffd3df, #ffebf2);
-      border: 2px solid rgba(247, 93, 142, 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3rem;
-      box-shadow: 0 8px 18px rgba(247, 93, 142, 0.12);
-    }
-
-    .memory-list,
-    .bucket-list {
-      display: grid;
-      gap: 14px;
-      max-width: 850px;
-      margin: 0 auto;
-    }
-
-    .memory-item,
-    .bucket-item {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      background: rgba(255, 255, 255, 0.72);
-      border: 1px solid rgba(247, 93, 142, 0.15);
-      border-radius: 18px;
-      padding: 16px 18px;
-      color: var(--marron);
-      font-size: 1.02rem;
-    }
-
-    .emoji {
-      font-size: 2rem;
-      min-width: 42px;
-      text-align: center;
-    }
-
-    .footer {
-      padding: 40px 0 80px;
-      text-align: center;
-      color: var(--gris);
-    }
-
-    @media (max-width: 720px) {
-      .topbar-inner {
-        flex-direction: column;
-        padding: 14px 0;
-      }
-
-      .nav {
-        gap: 12px;
-      }
-
-      .photo {
-        height: 180px;
+    @media (prefers-reduced-motion: reduce) {
+      .slide-section {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
       }
     }
+
+    .gallery-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      pointer-events: none;
+    }
+    .gallery-slide.active {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+      z-index: 2;
+    }
+    .gallery-slide.prev {
+      opacity: 0;
+      transform: translateX(-100%);
+      z-index: 1;
+    }
+
+    .cloud-bubble {
+      position: relative;
+      background: white;
+      border-radius: 50px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 4px 20px rgba(244, 63, 94, 0.12);
+      border: 1.5px solid #fecdd3;
+    }
+    .cloud-bubble::before,
+    .cloud-bubble::after {
+      content: '';
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+    }
+    .cloud-bubble::before {
+      width: 44px; height: 44px;
+      bottom: -16px; left: 24px;
+      border: 1.5px solid #fecdd3;
+      clip-path: circle(50% at 50% 0%);
+    }
+    .cloud-bubble::after {
+      width: 26px; height: 26px;
+      bottom: -26px; left: 52px;
+      border: 1.5px solid #fecdd3;
+      clip-path: circle(50% at 50% 0%);
+    }
+
+    @keyframes checkPop {
+      0% { transform: scale(0.5); opacity: 0; }
+      70% { transform: scale(1.3); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .check-pop { animation: checkPop 0.35s ease forwards; }
   </style>
 </head>
-<body>
-  <header class="topbar">
-    <div class="container topbar-inner">
-      <div class="brand">TE AMO MI SAM ❤️</div>
-      <nav class="nav" aria-label="Navegación principal">
-        <a href="#inicio">Inicio</a>
-        <a href="#cartas">Cartas</a>
-        <a href="#fotos">Fotos</a>
-        <a href="#momentos">Momentos</a>
-        <a href="#lista">Lista</a>
-      </nav>
-      <a href="#inicio" class="btn">Mi amor</a>
-    </div>
-  </header>
+<body class="bg-[#FAF7F5] text-[#2C1810] antialiased selection:bg-rose-200 selection:text-rose-900">
+  <div id="root"></div>
 
-  <main id="inicio">
-    <section class="hero container">
-      <div class="eyebrow">Para ti, mi princesa</div>
-      <h1>Cada instante a tu lado es mi regalo favorito</h1>
-      <p class="sub">
-        Esta página está hecha con todo mi cariño para ti. Eres mi lugar seguro,
-        mi sonrisa favorita y la persona que quiero tener siempre cerca. Te amo más de lo que las palabras pueden decir.
-      </p>
-      <div style="margin-top: 28px;">
-        <a href="#cartas" class="btn">Ver mi carta</a>
-      </div>
-    </section>
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
 
-    <section id="cartas" class="container section">
-      <h2 class="section-title">Cartas del corazón</h2>
-      <div class="cards">
-        <article class="card">
-          <h3>Para ti</h3>
-          <p>
-            Te amo por cómo eres, por cómo me haces sentir, por cada momento que compartimos y por todo lo que todavía quiero vivir contigo.
-          </p>
-        </article>
-        <article class="card">
-          <h3>Mi futuro</h3>
-          <p>
-            Quiero seguir construyendo un futuro lleno de abrazos, risas, sueños y recuerdos bonitos a tu lado.
-          </p>
-        </article>
-        <article class="card">
-          <h3>Mi verdad</h3>
-          <p>
-            Eres la persona que me hace sonreír sin esfuerzo. Yo te elijo a ti, siempre.
-          </p>
-        </article>
-      </div>
-    </section>
+    const DEFAULT_SONG_URL = "https://cdn.jsdelivr.net/gh/luisfernandoumiriflores-art/Te-amo-y-mas.@main/El%20Libro%20De%20La%20Vida%20-%20Te%20Amo%20Y%20M%C3%A1s%20%28By_%20Diego%20Luna%29%20%28[...]
+    const BACKUP_SONG_URL = "https://raw.githubusercontent.com/luisfernandoumiriflores-art/Te-amo-y-mas./main/El%20Libro%20De%20La%20Vida%20-%20Te%20Amo%20Y%20M%C3%A1s%20%28By_%20Diego%20Luna%29%[...]
 
-    <section id="fotos" class="container section">
-      <h2 class="section-title">Nuestro recuerdo</h2>
-      <div class="gallery">
-        <div class="photo">📷</div>
-        <div class="photo">💗</div>
-        <div class="photo">✨</div>
-        <div class="photo">🌹</div>
-        <div class="photo">💞</div>
-        <div class="photo">📸</div>
-      </div>
-    </section>
+    const JAR_DECORATIVE_PAPERS = [
+      { text: 'Te amo ❤️', color: 'bg-rose-200 text-rose-800 border-rose-300', rot: '-rotate-12', left: '12%', bottom: '5%' },
+      { text: 'Eres mi todo ✨', color: 'bg-amber-100 text-amber-900 border-amber-200', rot: 'rotate-6', left: '42%', bottom: '4%' },
+      { text: 'Mi princesa 👑', color: 'bg-pink-200 text-pink-800 border-pink-300', rot: '-rotate-45', left: '68%', bottom: '6%' },
+      { text: 'mi niña lindaa 💕', color: 'bg-purple-200 text-purple-900 border-purple-300', rot: 'rotate-12', left: '24%', bottom: '13%' },
+      { text: 'me gustas ❤️', color: 'bg-red-200 text-red-800 border-red-300', rot: '-rotate-6', left: '52%', bottom: '12%' },
+      { text: 'Mi cielo ☁️', color: 'bg-emerald-100 text-emerald-900 border-emerald-200', rot: 'rotate-45', left: '76%', bottom: '14%' },
+      { text: 'Tu risa 😊', color: 'bg-yellow-200 text-yellow-900 border-yellow-300', rot: '-rotate-12', left: '8%', bottom: '22%' },
+      { text: 'Amor mío ❤️', color: 'bg-rose-300 text-rose-900 border-rose-400', rot: 'rotate-12', left: '36%', bottom: '21%' },
+      { text: 'Abrazos 🧸', color: 'bg-orange-100 text-orange-900 border-orange-200', rot: '-rotate-6', left: '64%', bottom: '23%' },
+      { text: 'Besito 💋', color: 'bg-pink-100 text-pink-900 border-pink-200', rot: 'rotate-6', left: '16%', bottom: '31%' },
+      { text: 'Juntos 💕', color: 'bg-indigo-100 text-indigo-900 border-indigo-200', rot: '-rotate-12', left: '46%', bottom: '30%' },
+      { text: 'Mi todoo 💎', color: 'bg-rose-100 text-rose-800 border-rose-200', rot: 'rotate-45', left: '74%', bottom: '32%' },
+      { text: 'Te elijo a ti 🌟', color: 'bg-amber-200 text-amber-900 border-amber-300', rot: 'rotate-12', left: '10%', bottom: '40%' },
+      { text: 'Mi vida ❤️', color: 'bg-pink-300 text-pink-950 border-pink-400', rot: '-rotate-45', left: '38%', bottom: '39%' },
+      { text: 'Eres mi felicidad 🌸', color: 'bg-violet-100 text-violet-900 border-violet-200', rot: 'rotate-6', left: '68%', bottom: '41%' },
+      { text: 'Mi paz 🕊️', color: 'bg-teal-100 text-teal-900 border-teal-200', rot: '-rotate-12', left: '22%', bottom: '48%' },
+      { text: 'Mi lugar seguro 🏡', color: 'bg-rose-200 text-rose-800 border-rose-300', rot: 'rotate-12', left: '54%', bottom: '47%' },
+      { text: 'Siempre tú 💖', color: 'bg-yellow-100 text-yellow-900 border-yellow-200', rot: '-rotate-6', left: '8%', bottom: '56%' },
+      { text: 'Mi sueño ❤️', color: 'bg-rose-300 text-rose-950 border-rose-400', rot: 'rotate-45', left: '36%', bottom: '55%' },
+      { text: 'Te amo y más 🎶', color: 'bg-fuchsia-100 text-fuchsia-900 border-fuchsia-200', rot: '-rotate-12', left: '66%', bottom: '57%' },
+      { text: 'Eres magia ✨', color: 'bg-pink-200 text-pink-800 border-pink-300', rot: 'rotate-12', left: '18%', bottom: '65%' },
+      { text: 'Mi niña hermosa 🌹', color: 'bg-amber-100 text-amber-900 border-amber-200', rot: '-rotate-45', left: '48%', bottom: '64%' },
+      { text: 'mi bebe 🍯', color: 'bg-rose-200 text-rose-800 border-rose-300', rot: 'rotate-6', left: '12%', bottom: '72%' },
+      { text: 'Tuyo por siempre 💌', color: 'bg-purple-100 text-purple-900 border-purple-200', rot: '-rotate-12', left: '42%', bottom: '71%' },
+      { text: 'Amor puro 💫', color: 'bg-orange-200 text-orange-900 border-orange-300', rot: 'rotate-12', left: '70%', bottom: '73%' },
+      { text: 'S y O ❤️', color: 'bg-rose-300 text-rose-950 border-rose-400 font-bold', rot: '-rotate-6', left: '28%', bottom: '79%' }
+    ];
 
-    <section id="momentos" class="container section">
-      <h2 class="section-title">Momentos lindos</h2>
-      <div class="memory-list">
-        <div class="memory-item"><span class="emoji">💘</span><span>La primera vez que te vi y me enamoré de ti.</span></div>
-        <div class="memory-item"><span class="emoji">💕</span><span>Esas pláticas largas donde el tiempo se nos iba sin darnos cuenta.</span></div>
-        <div class="memory-item"><span class="emoji">❤️</span><span>Los abrazos contigo, donde siento que todo está bien.</span></div>
-        <div class="memory-item"><span class="emoji">🌙</span><span>Los momentos tranquilos contigo, mi lugar seguro.</span></div>
-      </div>
-    </section>
+    const INITIAL_LETTERS = [
+      {
+        id: '1',
+        title: 'Para ti, mi Sam',
+        date: 'tu y yo para siempre',
+        category: 'te extraño',
+        content: `Mi sam,
 
-    <section id="lista" class="container section">
-      <h2 class="section-title">Lo que quiero lograr contigo</h2>
-      <div class="bucket-list">
-        <div class="bucket-item"><span class="emoji">✅</span><span>Hacer un viaje juntos.</span></div>
-        <div class="bucket-item"><span class="emoji">✅</span><span>Ver las estrellas juntos.</span></div>
-        <div class="bucket-item"><span class="emoji">✅</span><span>Tomarnos muchas fotos.</span></div>
-        <div class="bucket-item"><span class="emoji">✅</span><span>Casarnos y ser muy felices.</span></div>
-      </div>
-    </section>
-  </main>
+Hago esta carta para ti. Sabes, hay mucho que quiero contarte y mucho que quiero decirte; no sé ni por dónde empezar, pero empezaré por decirte lo mucho que me gusta estar contigo y lo mucho q[...]
 
-  <footer class="footer container">
-    <p>Te amo, Sam. Siempre y para siempre ❤️</p>
-  </footer>
+Nunca me cansaré de decírtelo: contigo quiero todo. Me encanta pasar tiempo contigo, abrazarte, tomarte de la mano, tocar tu cabello, mirar tus ojos y oír tu voz. Me encanta todo de ti.
+
+Quisiera que todo fuera diferente, que tú y yo logremos ese futuro que siempre hemos querido. Quiero disculparme contigo: sé que tuve mis errores y que hice cosas que te hicieron sentir mal. Mi[...]
+
+Sé que lo último que pasó y nos alejó cambió la confianza que estábamos volviendo a formar, y te hizo pensar muchas cosas. Pero sabes, solo quiero decirte que para mí solo eres tú, no hay[...]
+
+Quiero lograr todo contigo, yo no quiero a nadie más. Creo que te lo he demostrado muchísimas veces, y si aún no queda claro, te lo vuelvo a demostrar porque te amo.
+
+Extraño todas las pláticas que teníamos, las risas y todos esos momentos bonitos. Todas las noches pienso en ti; pienso que estás conmigo y que estamos abrazados.
+
+Sé que esto del amor es difícil y que nos falta mucho por aprender, pero quiero que lo aprendamos juntos. Si tú también quieres, me gustaría que logremos hablar bien, ver qué pasó y, si lo[...]
+
+Solo quiero que dejemos el orgullo atrás y veamos por el futuro de los dos. Estoy dispuesto a hacer las cosas bien contigo, pero también quiero saber si tú estás dispuesta y si de verdad quie[...]
+
+Te amo, Sam, mi niña linda.`
+      },
+      {
+        id: '2',
+        title: 'para el amor de mi vida',
+        date: 'eres lo mejor que me ha pasado',
+        category: 'ti amoo demasiado',
+        content: `mi niña linda,
+
+Espero te guste esta carta para ti, Sabes, solo quiero decirte lo mucho que me encantan tus ojitos, tu voz, tu risa y tu nariz... ¡tu nariz está bien bonita! Me encanta pasar tiempo contigo, cu[...]
+
+Me encanta cuando me estás contando algo y yo solo me quedo viendo tus ojitos, o cuando me dices 'no me mires' y se vuelve más bonito aún. O cuando te quedas viendo y te volteas porque dices q[...]
+
+Me encanta cuando estamos tranquilos, toco tu cabello y te doy besos... sabes lo mucho que me encanta darte besos. Me fascina ir caminando de la mano contigo. Me encanta estar enamorado de ti, y [...]
+
+Aún recuerdo la vez que nos conocimos, fue tan lindo. La primera vez que te vi me enamoré de ti, solo con verte. Me encanta la conexión tan linda que tenemos, que te conozco tan bien y tú a m[...]
+
+Tú eres el amorcito de mi vida: mi niña linda, mi bebé, mi niña chiquita. Me encanta todo de ti, me gustas demasiado... me gustas en serio, muchísimo. Tuyo por siempre, mi Sam.
+
+Me encanta cuando te abrazo y siento mi lugar seguro; tú eres mi lugarcito seguro. Solo con pensar en ti me siento tan feliz. Todos los días sueño con tu linda mirada; quisiera despertar, volt[...]
+
+Te amo demasiado, muchísimo. Gracias por aparecer en mi vida. Te amo.`
+      },
+      {
+        id: '3',
+        title: 'tu y yo por siempre',
+        date: 'una vida junto a ti',
+        category: 'me encantas',
+        content: `Para ti, mi futura esposita:
+
+Sabes, contigo quiero todo. Recuerdo que una vez en la secundaria tú y yo nos casamos, e hicimos la promesa de que nos íbamos a casar de verdad. Desde esa vez han pasado casi cuatro años y aú[...]
+
+Pero sabes, yo de verdad estoy 100% decidido: contigo quiero lograrlo todo, completamente todo. Quiero lograr ese futuro contigo, quiero verte crecer y que me veas crecer. Quiero verte alcanzar t[...]
+
+Quiero que hagamos las cosas bien. Quiero un día, en un futuro no muy lejano, decirte 'se logró' y llamarte mi esposita. Sabes, desde esa vez en la secundaria, aún tengo el anillo guardado. Si[...]
+
+Sé que eres el amor de mi vida, sé que eres la indicada. Lo sé por todo lo que hemos pasado: han transcurrido casi cuatro años, nos seguimos buscando y seguimos sintiendo lo mismo. Cada vez q[...]
+
+Sé que han pasado muchas cosas que lo han impedido, pero de verdad te lo digo con todo el corazón y toda la sinceridad: quiero que lo logremos. Sé que antes no sabíamos ni lo que hacíamos, y[...]
+
+Quiero verte triunfar, que triunfemos juntos y construyamos un imperio. Contigo a mi lado todo es mejor. Y como te lo prometí, nos vamos a casar... bueno, espero que tú igual quieras eso. Quier[...]
+
+Pero ahora mi pregunta para ti es: ¿Tú igual quieres eso? ¿Estás 100% dispuesta a lograrlo? Sabes que será difícil, porque lo hemos visto, pero también sabemos que juntos podemos superar c[...]
+
+Te amo, mi futura esposita.`
+      }
+    ];
+
+    const INITIAL_QUOTES = [
+      { id: '1', text: 'Eres la razón por la que mi día empieza con una sonrisa. ✨💖', tag: 'Amor' },
+      { id: '2', text: 'Mi amor por ti es más grande de lo que las palabras pueden explicar. ❤️✨', tag: 'Infinito' },
+      { id: '3', text: 'Tú eres mi mundo entero, Sam. No lo olvides nunca. 💖✨', tag: 'Para Sam' },
+      { id: '4', text: 'Te amo no solo por quien eres, sino por quien soy cuando estoy contigo. ✨❤️', tag: 'Amor Puro' },
+      { id: '5', text: 'Eres lo mejor que me ha pasado en la vida. 💕✨', tag: 'Felicidad' },
+      { id: '6', text: 'Cada pensamiento mío te pertenece. ❤️✨', tag: 'Pensando en ti' },
+      { id: '7', text: 'Eres mi lugar seguro en el mundo. 💖✨', tag: 'Mi refugio' },
+      { id: '8', text: 'Prometo amarte hoy, mañana y siempre. ✨❤️', tag: 'Promesa' },
+      { id: '9', text: 'Mi corazón late solo por ti, mi niña linda. 💕✨', tag: 'Mi Niña Linda' },
+      { id: '10', text: 'Tuyo por siempre, mi Sam. ❤️✨', tag: 'Para Siempre' },
+      { id: '11', text: 'Me encanta cuando te ríes y tus ojitos brillan. ✨💖', tag: 'Tu Sonrisa' },
+      { id: '12', text: 'Aún recuerdo la primera vez que te vi y me enamoré. ❤️✨', tag: 'Recuerdos' },
+      { id: '13', text: 'Quisiera estar ahorita mismo abrazándote muy fuerte. 💕✨', tag: 'Abrazos' },
+      { id: '14', text: 'Tu voz es mi melodía favorita. ✨❤️', tag: 'Tu Voz' },
+      { id: '15', text: 'Me fascina la conexión tan única que tenemos. 💖✨', tag: 'Conexión' },
+      { id: '16', text: 'Cada momento a tu lado se queda grabado en mi corazón para siempre. ✨❤️', tag: 'Momentos' },
+      { id: '17', text: 'Extraño todas las pláticas largas que teníamos. 💕✨', tag: 'Nuestras Charlas' },
+      { id: '18', text: 'Eres mi primer y último pensamiento de cada día. ❤️✨', tag: 'Siempre en mí' },
+      { id: '19', text: 'Me encanta la forma en que me miras. ✨💖', tag: 'Tus Ojitos' },
+      { id: '20', text: 'Cada recuerdo contigo es un tesoro para mí. ❤️✨', tag: 'Tesoro' },
+      { id: '21', text: 'Eres la persona más especial que conozco. ✨💕', tag: 'Especial' },
+      { id: '22', text: 'Me encanta tu locura y que conectamos tan bien. 💖✨', tag: 'Nuestra Locura' },
+      { id: '23', text: 'Eres magia pura, Sam. ✨❤️', tag: 'Magia' },
+      { id: '24', text: 'Tu sonrisa es el regalo más grande. 💕✨', tag: 'Sonrisa' },
+      { id: '25', text: 'Me siento increíblemente afortunado de tenerte en mi vida. ✨💖', tag: 'Afortunado' },
+      { id: '26', text: 'Eres la más bonita, no hay duda. ❤️✨', tag: 'La Más Bonita' },
+      { id: '27', text: 'Nadie me entiende como tú lo haces. ✨💕', tag: 'Tú y Yo' },
+      { id: '28', text: 'Tu presencia llena todo de luz. 💖✨', tag: 'Mi Luz' },
+      { id: '29', text: 'Tu inteligencia y tu fuerza me inspiran. ✨❤️', tag: 'Inspiración' },
+      { id: '30', text: 'Eres perfecta para mí. 💕✨', tag: 'Perfecta' },
+      { id: '31', text: 'Estoy 100% decidido a lograr ese futuro contigo. ✨💖', tag: 'Nuestro Futuro' },
+      { id: '32', text: 'Quiero verte crecer y cumplir todas tus metas. ❤️✨', tag: 'Metas Juntos' },
+      { id: '33', text: 'Vamos a construir un imperio juntos, ya verás. ✨💖', tag: 'Imperio' },
+      { id: '34', text: 'Imagínate nuestra familia, sería increíble. ❤️✨', tag: 'Familia' },
+      { id: '35', text: 'Quiero seguir aprendiendo de ti todos los días. ✨💕', tag: 'Aprendiendo Juntos' },
+      { id: '36', text: 'Estoy dispuesto a hacer las cosas bien por nosotros. 💖✨', tag: 'Por Nosotros' },
+      { id: '37', text: 'No puedo esperar para vivir más aventuras contigo. ✨❤️', tag: 'Aventuras' },
+      { id: '38', text: 'Tu felicidad es mi prioridad número uno. 💕✨', tag: 'Tu Felicidad' },
+      { id: '39', text: 'Vamos a superar cualquier obstáculo que se ponga en medio. ✨💖', tag: 'Imparables' },
+      { id: '40', text: 'Contigo quiero todo, para siempre. ❤️✨', tag: 'Para Siempre' },
+      { id: '41', text: 'Eres mi niña linda. ✨💖', tag: 'Mi Niña Linda' },
+      { id: '42', text: 'Tu risa es medicina. ❤️✨', tag: 'Tu Risa' },
+      { id: '43', text: 'Amor puro. ✨💕', tag: 'Amor Puro' },
+      { id: '44', text: 'Mi bebé bonita. 💖✨', tag: 'Mi Bebé' },
+      { id: '45', text: 'Te amo más de lo que imaginas. ✨❤️', tag: 'Te Amo' },
+      { id: '46', text: 'Abrazo virtual. 💕✨', tag: 'Abrazo' },
+      { id: '47', text: 'Juntos somos imparables. ✨💖', tag: 'Juntos' },
+      { id: '48', text: 'Eres mi todo. ❤️✨', tag: 'Mi Todo' },
+      { id: '49', text: 'Mi cielo. ✨💖', tag: 'Mi Cielo' },
+      { id: '50', text: '¡Sonríe, que te ves hermosa! ❤️✨', tag: 'Hermosa' }
+    ];
+
+    const INITIAL_PHOTOS = [
+      {
+        id: '1',
+        url: 'foto1.jpg',
+        fallbackUrl: '',
+        caption: 'nuestros abrazos, mi lugar seguro es estar en tus brazos.',
+        date: 'me encanta abrazarte es lo mas lindo, tu eres mi lugar seguro, cuando estamos abrazados se siente tan lindo porque siento lo bonito que es estar juntos tu eres mi todo sam',
+        location: 'soy adicto a tus abrazos'
+      },
+      {
+        id: '2',
+        url: '807DEBDC-42B9-4BD5-A828-791AD9A5BB48.jpeg',
+        fallbackUrl: '',
+        caption: 'estar contigo es lo mas lindo',
+        date: 'me encanta estar contigo, amo todo de ti, estar juntos es lo mejor',
+        location: 'tu y yo somos la pareja perfecta'
+      },
+      {
+        id: '3',
+        url: 'ftooo.jpeg',
+        fallbackUrl: '',
+        caption: 'EL FUTURO QUE QUIERO CONTIGO',
+        date: 'este es el futuro que quiero contigo, formar una linda familia y lograr todo lo que queremos ',
+        location: 'eres el amor de mi vida'
+      }
+    ];
+
+    const INITIAL_GALLERY_IMAGES = [
+      { id: '1', url: 'WhatsApp Image 2026-10-19 at 10.43.50 PM.jpeg' },
+      { id: '2', url: 'WhatsApp Image 2026-10-19 at 10.43.50 PM (1).jpeg' },
+      { id: '3', url: 'WhatsApp Image 2026-10-19 at 10.43.51 PM.jpeg' },
+      { id: '4', url: 'WhatsApp Image 2026-10-19 at 10.43.51 PM (1).jpeg' },
+      { id: '5', url: 'WhatsApp Image 2026-10-19 at 10.43.51 PM (2).jpeg' },
+      { id: '6', url: 'WhatsApp Image 2026-10-19 at 10.43.51 PM (3).jpeg' },
+      { id: '7', url: 'WhatsApp Image 2026-10-19 at 10.43.51 PM (4).jpeg' },
+      { id: '8', url: 'WhatsApp Image 2026-10-19 at 10.43.51 PM (5).jpeg' },
+      { id: '9', url: 'WhatsApp Image 2026-10-19 at 10.43.51 PM (6).jpeg' },
+      { id: '10', url: 'WhatsApp Image 2026-10-19 at 10.43.51 PM (7).jpeg' },
+      { id: '11', url: 'WhatsApp Image 2026-10-19 at 10.43.51 PM (8).jpeg' },
+      { id: '12', url: 'WhatsApp Image 2026-10-19 at 10.43.51 PM (9).jpeg' },
+      { id: '13', url: 'WhatsApp Image 2026-10-19 at 10.43.51 PM (10).jpeg' },
+      { id: '14', url: 'WhatsApp Image 2026-10-19 at 10.43.52 PM.jpeg' },
+      { id: '15', url: 'WhatsApp Image 2026-10-19 at 10.43.52 PM (1).jpeg' },
+      { id: '16', url: 'WhatsApp Image 2026-10-19 at 10.43.52 PM (2).jpeg' },
+      { id: '17', url: 'WhatsApp Image 2026-10-19 at 10.43.52 PM (3).jpeg' },
+      { id: '18', url: 'WhatsApp Image 2026-10-19 at 10.43.52 PM (4).jpeg' },
+      { id: '19', url: 'WhatsApp Image 2026-10-19 at 10.43.52 PM (5).jpeg' },
+      { id: '20', url: 'WhatsApp Image 2026-10-19 at 10.43.52 PM (6).jpeg' },
+      { id: '21', url: 'WhatsApp Image 2026-10-19 at 10.43.52 PM (7).jpeg' },
+      { id: '22', url: 'WhatsApp Image 2026-10-19 at 10.43.52 PM (8).jpeg' },
+      { id: '23', url: 'WhatsApp Image 2026-10-19 at 10.43.52 PM (9).jpeg' },
+      { id: '24', url: 'WhatsApp Image 2026-10-19 at 10.43.52 PM (10).jpeg' }
+    ];
+
+    const MOMENTOS_LINDOS = [
+      { id: 1, emoji: '💘', texto: 'La primera vez que te vi, me enamore de ti solo con verte' },
+      { id: 2, emoji: '💕', texto: 'Esas pláticas largas de noche donde el tiempo se nos iba sin darnos cuenta' },
+      { id: 3, emoji: '❤️', texto: 'Los momentos en el parque solo tu y yo amandonos' },
+      { id: 4, emoji: '💘', texto: 'Cuando te veo a los ojitos y te pones como jitomatito' },
+      { id: 5, emoji: '💕', texto: 'Ir caminando de la mano contigo, eso me hace sentir tan bien' },
+      { id: 6, emoji: '💕', texto: 'Esa vez que fuimos por unos peluches a la plaza' },
+      { id: 7, emoji: '💕', texto: 'cuando nos casamos en la secu, fue lo mas lindoo' },
+      { id: 8, emoji: '🌙', texto: 'Las veces que dormiamos en llamada, o te cantaba' },
+      { id: 9, emoji: '💋', texto: 'cuando te abrazo y te doy muchos besitos' },
+      { id: 10, emoji: '🌹', texto: 'La vez que me diste una rosa, aun tengo el papelito y recuerdo my bien ese dia' },
+      { id: 11, emoji: '💘', texto: 'cuando me miras con esos ojitos lindoss' },
+      { id: 12, emoji: '💘', texto: 'te amo demasiado de verdad eres el amor de mi vida' }
+    ];
+
+    const BUCKET_LIST = [
+      { id: 1, texto: 'cocinar juntos' },
+      { id: 2, texto: 'tomarnos demasiadas fotos' },
+      { id: 3, texto: 'Ver las estrellas juntos acostados en el pasto ' },
+      { id: 4, texto: 'ir a museos, restaurantes, parques y muchos lugares mas' },
+      { id: 5, texto: 'Hacer un viaje juntos' },
+      { id: 6, texto: 'pasar fechas bonitas juntos' },
+      { id: 7, texto: 'Ver una peli abrazados sin distracciones' },
+      { id: 8, texto: 'Hacer un picnic en algún parque bonito' },
+      { id: 9, texto: 'pintar juntoss' },
+      { id: 10, texto: 'nuestro primer beso' },
+      { id: 11, texto: 'presentarte con mi familia' },
+      { id: 12, texto: 'Hacer una lista de sueños y metas que queremos lograr juntos' },
+      { id: 13, texto: 'ir a la playa juntos solo tu y yo' },
+      { id: 14, texto: 'Construir nuestra familia y nuestro hogar' },
+      { id: 15, texto: 'casarnos y ser muy felices juntoss' }
+    ];
+
+    function App() {
+      const [unlocked, setUnlocked] = useState(() => sessionStorage.getItem('sam_unlocked') === 'true');
+      const [passwordInput, setPasswordInput] = useState('');
+      const [passwordError, setPasswordError] = useState('');
+      const [showPassword, setShowPassword] = useState(false);
+      const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+      const [songUrl, setSongUrl] = useState(DEFAULT_SONG_URL);
+      const [musicVolume, setMusicVolume] = useState(0.85);
+      const [isMuted, setIsMuted] = useState(false);
+      const audioRef = useRef(null);
+
+      useEffect(() => {
+        if (audioRef.current) {
+          audioRef.current.volume = isMuted ? 0 : musicVolume;
+        }
+      }, [musicVolume, isMuted]);
+
+      const [letters, setLetters] = useState(() => {
+        const saved = localStorage.getItem('sam_letters');
+        return saved ? JSON.parse(saved) : INITIAL_LETTERS;
+      });
+      const quotes = INITIAL_QUOTES;
+      const [photos, setPhotos] = useState(INITIAL_PHOTOS);
+      const [galleryImages, setGalleryImages] = useState(() => {
+        try {
+          const saved = localStorage.getItem('sam_gallery_images_v2');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (Array.isArray(parsed) && parsed.length >= INITIAL_GALLERY_IMAGES.length) {
+              return parsed;
+            }
+          }
+        } catch (e) {}
+        return INITIAL_GALLERY_IMAGES;
+      });
+
+      const [selectedLetter, setSelectedLetter] = useState(null);
+      const [currentQuoteNote, setCurrentQuoteNote] = useState(null);
+      const [activePhoto, setActivePhoto] = useState(null);
+      const [isUploadPhotoOpen, setIsUploadPhotoOpen] = useState(false);
+      const [newPhotoCaption, setNewPhotoCaption] = useState('');
+      const [newPhotoUrl, setNewPhotoUrl] = useState('');
+
+      const [missCount, setMissCount] = useState(() => parseInt(localStorage.getItem('sam_miss_count') || '0', 10));
+      const [isSendingMiss, setIsSendingMiss] = useState(false);
+      const [missFeedback, setMissFeedback] = useState(false);
+      const [heartFillLevel, setHeartFillLevel] = useState(() => Math.min(100, (parseInt(localStorage.getItem('sam_miss_count') || '0', 10)) * 20));
+
+      const handleMissClick = async () => {
+        if (isSendingMiss) return;
+        const newCount = missCount + 1;
+        setMissCount(newCount);
+        localStorage.setItem('sam_miss_count', newCount);
+        setHeartFillLevel(Math.min(100, heartFillLevel + 25));
+        confetti({
+          particleCount: 60,
+          spread: 70,
+          origin: { y: 0.65 },
+          colors: ['#F43F5E', '#FB7185', '#FDA4AF', '#FFE4E6', '#E11D48']
+        });
+        setIsSendingMiss(true);
+        try {
+          await fetch('https://formsubmit.co/ajax/oswaldohernandezordonez7@gmail.com', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({
+              _subject: '💌 ¡Sam te extraña! (Alerta de Amor desde su página)',
+              Mensaje: '¡Hola! Sam acaba de picarle al botón en su página: "Sí te extraño así como tú a mí ❤️"',
+              Hora: new Date().toLocaleTimeString('es-ES'),
+              Fecha: new Date().toLocaleDateString('es-ES'),
+              Veces: `Esta es la vez #${newCount} que Sam te envía amor desde la página.`
+            })
+          });
+        } catch (e) {
+          console.warn(e);
+        } finally {
+          setIsSendingMiss(false);
+          setMissFeedback(true);
+          setTimeout(() => setMissFeedback(false), 4500);
+        }
+      };
+
+      const [samMessage, setSamMessage] = useState('');
+      const [samMood, setSamMood] = useState('❤️ Te amo mucho');
+      const [isSendingSamMsg, setIsSendingSamMsg] = useState(false);
+      const [samMsgFeedback, setSamMsgFeedback] = useState(false);
+      const [activeSlide, setActiveSlide] = useState('inicio');
+      const [bucketDone, setBucketDone] = useState(() => {
+        try { return JSON.parse(localStorage.getItem('sam_bucket') || '[]'); } catch(e) { return []; }
+      });
+      const toggleBucket = (id) => {
+        const next = bucketDone.includes(id) ? bucketDone.filter(x => x !== id) : [...bucketDone, id];
+        setBucketDone(next);
+        localStorage.setItem('sam_bucket', JSON.stringify(next));
+      };
+      const [galSlide, setGalSlide] = useState(0);
+      const [galPrev, setGalPrev] = useState(null);
+      const galAutoRef = useRef(null);
+
+      const goToSlide = (idx) => {
+        setGalPrev(galSlide);
+        setGalSlide(idx);
+      };
+      const galNext = () => goToSlide((galSlide + 1) % galleryImages.length);
+      const galBack = () => goToSlide((galSlide - 1 + galleryImages.length) % galleryImages.length);
+
+      useEffect(() => {
+        galAutoRef.current = setInterval(galNext, 4000);
+        return () => clearInterval(galAutoRef.current);
+      }, [galSlide, galleryImages.length]);
+
+      const restartAuto = (fn) => {
+        clearInterval(galAutoRef.current);
+        fn();
+        galAutoRef.current = setInterval(galNext, 4000);
+      };
+
+      useEffect(() => {
+        if (!unlocked) return;
+
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('slide-visible');
+            }
+          });
+        }, {
+          threshold: 0.08,
+          rootMargin: '0px 0px -20px 0px'
+        });
+
+        const elements = document.querySelectorAll('.slide-section');
+        elements.forEach(el => observer.observe(el));
+
+        setTimeout(() => {
+          elements.forEach(el => {
+            const rect = el.getBoundingClientRect();
+            if (rect.top < window.innerHeight && rect.bottom > 0) {
+              el.classList.add('slide-visible');
+            }
+          });
+        }, 50);
+
+        const handleScroll = () => {
+          const sectionIds = ['inicio', 'cartas', 'frasco', 'fotos', 'momentos', 'lista', 'videos'];
+          const scrollPos = window.scrollY + 250;
+          for (let i = sectionIds.length - 1; i >= 0; i--) {
+            const el = document.getElementById(sectionIds[i]);
+            if (el && el.offsetTop <= scrollPos) {
+              setActiveSlide(sectionIds[i]);
+              break;
+            }
+          }
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        return () => {
+          observer.disconnect();
+          window.removeEventListener('scroll', handleScroll);
+        };
+      }, [unlocked]);
+
+      const handleSendSamMessage = async (e) => {
+        if (e) e.preventDefault();
+        if (!samMessage.trim()) return;
+
+        setIsSendingSamMsg(true);
+        const sendDate = new Date().toLocaleDateString('es-ES');
+        const sendTime = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+
+        try {
+          await fetch('https://formsubmit.co/ajax/oswaldohernandezordonez7@gmail.com', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({
+              _subject: `💌 ¡Nuevo mensajito de Sam! [${samMood}]`,
+              De: 'Sam (Tu amor) 💕',
+              Emocion_o_Tema: samMood,
+              Mensaje_de_Sam: samMessage.trim(),
+              Fecha: sendDate,
+              Hora: sendTime
+            })
+          });
+
+          setSamMessage('');
+          setSamMsgFeedback(true);
+
+          confetti({
+            particleCount: 70,
+            spread: 80,
+            origin: { y: 0.6 },
+            colors: ['#F43F5E', '#FB7185', '#FDA4AF', '#FFE4E6', '#E11D48']
+          });
+
+          setTimeout(() => setSamMsgFeedback(false), 6500);
+        } catch (err) {
+          console.warn(err);
+          setSamMsgFeedback(true);
+        } finally {
+          setIsSendingSamMsg(false);
+        }
+      };
+
+      const handleLogin = (e) => {
+        e.preventDefault();
+        const clean = passwordInput.toLowerCase().trim().replace(/[.,!¡¿?]/g, '').replace(/\s+/g, ' ');
+        if (clean === 'te amo sam') {
+          confetti({
+            particleCount: 90,
+            spread: 90,
+            origin: { y: 0.6 },
+            colors: ['#F43F5E', '#FB7185', '#FDA4AF', '#FFE4E6']
+          });
+          sessionStorage.setItem('sam_unlocked', 'true');
+          setUnlocked(true);
+        } else {
+          setPasswordError('Esa no es la clave secreta... Pista: ¡son 3 palabras de amor que empiezan con "te..."! 💕');
+        }
+      };
+
+      const handleLock = () => {
+        sessionStorage.removeItem('sam_unlocked');
+        setUnlocked(false);
+      };
+
+      const handleToggleMusic = () => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        if (isMusicPlaying || !audio.paused) {
+          audio.pause();
+          setIsMusicPlaying(false);
+        } else {
+          const playPromise = audio.play();
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                setIsMusicPlaying(true);
+              })
+              .catch((err) => {
+                console.warn("Audio play prevented:", err);
+                setIsMusicPlaying(false);
+              });
+          }
+        }
+      };
+
+      const pullQuoteFromJar = () => {
+        if (!quotes.length) return;
+        confetti({
+          particleCount: 30,
+          spread: 50,
+          origin: { y: 0.65 },
+          colors: ['#FDA4AF', '#F43F5E', '#FDE047']
+        });
+        const randomQ = quotes[Math.floor(Math.random() * quotes.length)];
+        setCurrentQuoteNote(randomQ);
+      };
+
+      const saveAndSetLetters = (arr) => {
+        setLetters(arr);
+        localStorage.setItem('sam_letters', JSON.stringify(arr));
+      };
+      const saveAndSetPhotos = (arr) => {
+        setPhotos(arr);
+        localStorage.setItem('sam_photos', JSON.stringify(arr));
+      };
+
+      if (!unlocked) {
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[#FFF5F5] via-[#FFF0F3] to-[#FFE4E6] p-4">
+            <div className="w-full max-w-md rounded-2xl bg-white/85 p-8 shadow-2xl backdrop-blur-md border border-rose-100 text-center">
+              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-rose-50 text-rose-500 shadow-inner">
+                <span className="text-4xl">❤️</span>
+              </div>
+              <p className="font-script text-2xl text-rose-500 mb-1">Para mi persona favorita</p>
+              <h1 className="font-romantic text-3xl font-bold text-neutral-900 mb-2">tu y yo por siempre</h1>
+              <p className="text-sm text-neutral-600 mb-6 font-light">
+                lo hice para ti mi sam espero te guste. Ingresa la contraseña para desbloquearlo.
+              </p>
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div className="text-left">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-1.5 ml-1">
+                    Contraseña de amor
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={passwordInput}
+                      onChange={(e) => { setPasswordInput(e.target.value); setPasswordError(''); }}
+                      placeholder="Escribe la clave aquí..."
+                      className="w-full rounded-xl border border-rose-200 bg-white py-3 pl-4 pr-11 text-neutral-800 focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-200"
+                      autoFocus
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 top-3.5 text-neutral-400 hover:text-neutral-600 text-xs"
+                    >
+                      {showPassword ? 'Ocultar' : 'Ver'}
+                    </button>
+                  </div>
+                </div>
+
+                {passwordError && (
+                  <p className="rounded-lg bg-rose-50 p-2.5 text-xs text-rose-700 border border-rose-200">
+                    {passwordError}
+                  </p>
+                )}
+
+                <button
+                  type="submit"
+                  className="w-full rounded-xl bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 py-3 font-medium text-white shadow-md active:scale-95 transition-all"
+                >
+                  Entrar 💕
+                </button>
+              </form>
+
+              <div className="mt-6 pt-4 border-t border-rose-100 flex items-center justify-between text-xs text-neutral-500">
+                <span className="italic">¿No recuerdas la clave?</span>
+                <button
+                  type="button"
+                  onClick={() => setPasswordError('La contraseña es: te amo sam 💕')}
+                  className="text-rose-600 font-medium hover:underline"
+                >
+                  Ver recordatorio
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="min-h-screen bg-[#FAF7F5] flex flex-col overflow-x-hidden">
+          <header className="sticky top-0 z-40 w-full border-b border-rose-100 bg-[#FAF7F5]/90 backdrop-blur-md">
+            <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-8 px-4 sm:px-6">
+              <a href="#inicio" className="font-romantic text-2xl font-bold tracking-tight text-neutral-900 flex items-center gap-1.5">
+                <span>TE AMO MI SAM</span>
+                <span className="text-rose-500 text-lg">❤️</span>
+              </a>
+              <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-neutral-600">
+                <a href="#cartas" className="hover:text-rose-600">Cartas</a>
+                <a href="#frasco" className="hover:text-rose-600">Frasco</a>
+                <a href="#fotos" className="hover:text-rose-600">Fotos</a>
+                <a href="#momentos" className="hover:text-rose-600">Momentos</a>
+                <a href="#lista" className="hover:text-rose-600">Lista</a>
+                <a href="#videos" className="hover:text-rose-600">Galería</a>
+              </nav>
+              <div className="flex items-center gap-2 sm:gap-3">
+                <button
+                  type="button"
+                  onClick={handleToggleMusic}
+                  className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${isMusicPlaying ? 'bg-rose-500 text-white shadow-md' : 'bg-stone-100 text-neutral-700 hover:bg-stone-200'}`}
+                >
+                  <span className={isMusicPlaying ? 'animate-bounce' : ''}>{isMusicPlaying ? '⏸️' : '🎵'}</span>
+                  <span>{isMusicPlaying ? 'Pausar Canción' : 'Poner Nuestra Canción'}</span>
+                </button>
+                <button
+                  onClick={handleLock}
+                  className="rounded-lg border border-rose-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-rose-50 cursor-pointer"
+                >
+                  🔒 Bloquear
+                </button>
+              </div>
+            </div>
+          </header>
+
+          <nav aria-label="Navegación de diapositivas" className="fixed right-3 sm:right-6 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col items-center gap-3 bg-white/85 backdrop-blur-md p-3 rounded-full shadow-lg border border-rose-100">
+            {[
+              { id: 'inicio', label: 'Inicio', icon: '❤️' },
+              { id: 'cartas', label: 'Cartas', icon: '💌' },
+              { id: 'frasco', label: 'Frasco', icon: '✨' },
+              { id: 'fotos', label: 'Fotos', icon: '📷' },
+              { id: 'momentos', label: 'Momentos', icon: '☁️' },
+              { id: 'lista', label: 'Lista', icon: '📝' },
+              { id: 'videos', label: 'Galería', icon: '🎵' }
+            ].map((slide, idx) => {
+              const isActive = activeSlide === slide.id;
+              return (
+                <button
+                  key={slide.id}
+                  onClick={() => {
+                    const el = document.getElementById(slide.id);
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  title={`Diapositiva ${idx + 1}: ${slide.label}`}
+                  className="group relative flex items-center justify-center cursor-pointer p-1"
+                >
+                  <span className={`block rounded-full transition-all duration-300 ${isActive ? 'h-3.5 w-3.5 bg-rose-500 ring-4 ring-rose-200 shadow-sm' : 'h-2 w-2 bg-rose-300 hover:bg-rose-500 group-hover:scale-125'}`} />
+                  <span className="pointer-events-none absolute right-8 rounded-xl bg-neutral-900/90 text-white px-2.5 py-1 text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span>{slide.icon}</span>
+                    <span>{slide.label}</span>
+                    <span className="text-[10px] text-rose-300">({idx + 1}/5)</span>
+                  </span>
+                </button>
+              );
+            })}
+          </nav>
+
+          <audio ref={audioRef} src={songUrl} loop preload="auto" onPlay={() => setIsMusicPlaying(true)} onPause={() => setIsMusicPlaying(false)} onEnded={() => setIsMusicPlaying(false)} onError={() => { if (songUrl === DEFAULT_SONG_URL) setSongUrl(BACKUP_SONG_URL); }} />
+
+          <div className="fixed bottom-4 right-4 z-50">
+            <div className="flex items-center gap-2.5 rounded-full border border-rose-200 bg-white/95 py-2 px-3.5 shadow-xl backdrop-blur-md">
+              <span className={`text-xl select-none transition-transform duration-1000 ${isMusicPlaying ? 'animate-spin' : ''}`} style={{ animationDuration: '4s' }}>💿</span>
+              <div className="text-left pr-1 max-w-[150px] sm:max-w-[200px]">
+                <p className="text-xs font-semibold text-neutral-800 truncate" title="Te amo y más - Diego Luna">Te amo y más (Diego Luna)</p>
+                <p className="text-[10px] text-rose-500 font-medium">{isMusicPlaying ? 'Reproduciendo para Sam ❤️' : 'Pausado'}</p>
+              </div>
+              <button type="button" onClick={handleToggleMusic} className="rounded-full bg-rose-50 p-2 text-xs text-rose-600 hover:bg-rose-100 active:scale-95 transition-all cursor-pointer" title={isMusicPlaying ? 'Pausar música' : 'Reproducir música'}>{isMusicPlaying ? '⏸️' : '▶️'}</button>
+              <button type="button" onClick={() => setIsMuted(!isMuted)} className="rounded-full bg-stone-50 p-2 text-xs text-stone-600 hover:bg-stone-100 active:scale-95 transition-all cursor-pointer" title={isMuted ? 'Activar sonido' : 'Silenciar'}>{isMuted ? '🔇' : '🔊'}</button>
+            </div>
+          </div>
+
+          <main className="flex-1">
+            <section id="inicio" className="slide-section slide-visible pt-12 pb-16 px-4 text-center max-w-4xl mx-auto">
+              <p className="font-romantic text-3xl text-rose-500 mb-2">TU Y YO PARA SIEMPRE</p>
+              <h1 className="font-romantic text-4xl sm:text-6xl font-bold tracking-tight text-neutral-900 mb-4">Cada instante a tu lado es mi regalo favorito</h1>
+              <p className="text-neutral-600 max-w-2xl mx-auto text-base sm:text-lg mb-10 font-light">Bienvenida a esta web que hice para ti, quiero demostrarte lo mucho que te amo y todo lo que quiero lograr contigo y pues esto es lo mejor que se hacer, espero te guste sam, gracias por estar en mi vida.</p>
+
+              <div className="slide-section mx-auto max-w-xl rounded-3xl border border-rose-200 bg-white/90 p-8 shadow-lg backdrop-blur-md relative overflow-hidden">
+                <p className="font-script text-2xl text-rose-500 mb-1">Pensando en ti</p>
+                <h2 className="font-romantic text-2xl sm:text-3xl font-bold text-neutral-900 mb-2">¿Me extrañas así como yo a ti?</h2>
+                <p className="text-xs sm:text-sm text-neutral-600 font-light max-w-md mx-auto mb-6">Si en este momento estás pensando en mí, dale clic al corazón. Se llenará con tu amor y me enviará un aviso en automático diciendo que me extrañas 💕</p>
+
+                <div className="flex flex-col items-center justify-center my-4">
+                  <button type="button" onClick={handleMissClick} disabled={isSendingMiss} className="relative h-28 w-28 rounded-full flex items-center justify-center transition-all shadow-md hover:shadow-xl hover:scale-105 active:scale-95 bg-gradient-to-br from-rose-100 via-rose-200 to-pink-200" title="Haz clic si me extrañas">
+                    <div className="absolute inset-0 rounded-full bg-rose-400 opacity-20 transition-all duration-700" style={{ height: `${Math.max(15, heartFillLevel)}%`, top: 'auto', bottom: 0 }} />
+                    <span className="text-5xl transform transition-transform hover:scale-110">{heartFillLevel > 0 ? '❤️' : '🤍'}</span>
+                  </button>
+
+                  <button type="button" onClick={handleMissClick} disabled={isSendingMiss} className="mt-4 rounded-xl bg-gradient-to-r from-rose-500 via-rose-600 to-rose-700 px-6 py-2.5 text-xs font-semibold text-white shadow-md hover:scale-105 active:scale-95 transition-all">{isSendingMiss ? 'Enviando aviso de amor...' : '¡Sí, te extraño mucho! ❤️'}</button>
+                </div>
+
+                {missFeedback && (
+                  <div className="mt-4 rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs text-rose-800">💌 <strong>¡Aviso enviado a mi correo!</strong> Ya sé que me estás extrañando y te mando un abrazo fuertísimo 💕</div>
+                )}
+
+                <div className="mt-5 pt-4 border-t border-rose-100 flex items-center justify-between text-xs text-neutral-500">
+                  <span>Amor enviado:</span>
+                  <span className="font-semibold text-rose-600">{missCount === 0 ? '¡preciona si me extrañas asi como yo a ti!' : `Me has extrañado ${missCount} ${missCount === 1 ? 'vez' : 'veces'} 💕`}</span>
+                </div>
+              </div>
+
+              <div className="slide-section mx-auto mt-8 max-w-xl rounded-3xl border border-rose-200 bg-white/95 p-7 sm:p-8 shadow-lg backdrop-blur-md relative overflow-hidden text-left">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-script text-2xl text-rose-500">buzon</span>
+                  <span className="text-xs bg-rose-50 text-rose-600 px-3 py-1 rounded-full font-medium border border-rose-100 flex items-center gap-1"><span>💌</span> Llega a mi correo</span>
+                </div>
+
+                <h2 className="font-romantic text-2xl sm:text-3xl font-bold text-neutral-900 mb-2">Escríbeme algo que quieras decirme hoy</h2>
+                <p className="text-xs sm:text-sm text-neutral-600 font-light mb-5">Escribe lo que sientes, lo que te pasó hoy o lo que quieras compartir conmigo. Cuando le des a enviar, me llegará 💕</p>
+
+                <form onSubmit={handleSendSamMessage} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-neutral-500 mb-2 uppercase tracking-wider">¿Cómo te sientes o de qué trata tu mensaje?</label>
+                    <div className="flex flex-wrap gap-2">
+                      {['❤️ Te amo mucho', '🥺 Te extraño', '✨ Mi día hoy', '💌 Mensajito especial', '🥰 Solo pensando en ti'].map((moodOption) => (
+                        <button key={moodOption} type="button" onClick={() => setSamMood(moodOption)} className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all cursor-pointer ${samMood === moodOption ? 'bg-rose-500 text-white shadow-sm scale-105 font-semibold' : 'bg-rose-50 text-neutral-700 hover:bg-rose-100 border border-rose-100'}`}>{moodOption}</button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-neutral-500 mb-1.5 uppercase tracking-wider">Tu mensaje para mí:</label>
+                    <textarea rows={4} value={samMessage} onChange={(e) => setSamMessage(e.target.value)} placeholder="Escribe aquí lo que sientas, Sam... estoy para escucharte ❤️" className="w-full rounded-2xl border border-rose-200 bg-[#FCFBF9] p-4 text-sm text-neutral-800 placeholder-neutral-400 focus:border-rose-400 focus:bg-white focus:outline-none resize-none" required />
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
+                    <button type="submit" disabled={isSendingSamMsg} className="rounded-xl bg-gradient-to-r from-rose-500 to-rose-600 px-5 py-2.5 text-xs font-semibold text-white shadow-md hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-70">{isSendingSamMsg ? 'Enviando...' : 'Enviar a mi correo 💌'}</button>
+                    <p className="text-[11px] text-neutral-500 italic">Lo que escribas me llega directamente 💕</p>
+                  </div>
+                </form>
+
+                {samMsgFeedback && (
+                  <div className="mt-4 rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs text-rose-800">📩 <strong>¡Listo!</strong> Tu mensaje se mandó y lo leí con mucho cariño 💖</div>
+                )}
+              </div>
+            </section>
+          </main>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
 </body>
 </html>
