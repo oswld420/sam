@@ -128,17 +128,16 @@
     .check-pop { animation: checkPop 0.35s ease forwards; }
   </style>
 </head>
-<body class="bg-[#FAF7F5] text-[#2C1810] antialiased selection:bg-rose-200 selection:text-rose-900">
+<body class="bg-[#FFE3EA] text-[#2C1810] antialiased selection:bg-rose-200 selection:text-rose-900">
   <div id="root"></div>
 
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
 
     // URL de audio en streaming web directo (El Libro de la Vida - Te Amo y Más por Diego Luna)
-    const DEFAULT_SONG_URL = "https://cdn.jsdelivr.net/gh/luisfernandoumiriflores-art/Te-amo-y-mas.@main/El%20Libro%20De%20La%20Vida%20-%20Te%20Amo%20Y%20M%C3%A1s%20%28By_%20Diego%20Luna%29%20%28Letra%29.mp3";
-    const BACKUP_SONG_URL = "https://raw.githubusercontent.com/luisfernandoumiriflores-art/Te-amo-y-mas./main/El%20Libro%20De%20La%20Vida%20-%20Te%20Amo%20Y%20M%C3%A1s%20%28By_%20Diego%20Luna%29%20%28Letra%29.mp3";
+    const DEFAULT_SONG_URL = "https://cdn.jsdelivr.net/gh/luisfernandoumiriflores-art/Te-amo-y-mas.@main/El%20Libro%20De%20La%20Vida%20-%20Te%20Amo%20Y%20M%C3%A1s%20%28By_%20Diego%20Luna%29%20%28[...]
+    const BACKUP_SONG_URL = "https://raw.githubusercontent.com/luisfernandoumiriflores-art/Te-amo-y-mas./main/El%20Libro%20De%20La%20Vida%20-%20Te%20Amo%20Y%20M%C3%A1s%20%28By_%20Diego%20Luna%29%[...]
 
-    // Papelitos decorativos doblados que llenan visualmente el frasco de amor
     const JAR_DECORATIVE_PAPERS = [
       { text: 'Te amo ❤️', color: 'bg-rose-200 text-rose-800 border-rose-300', rot: '-rotate-12', left: '12%', bottom: '5%' },
       { text: 'Eres mi todo ✨', color: 'bg-amber-100 text-amber-900 border-amber-200', rot: 'rotate-6', left: '42%', bottom: '4%' },
@@ -168,77 +167,58 @@
       { text: 'S y O ❤️', color: 'bg-rose-300 text-rose-950 border-rose-400 font-bold', rot: '-rotate-6', left: '28%', bottom: '79%' }
     ];
 
-    // Default Seed Data
     const INITIAL_LETTERS = [
-      {
-        id: '1',
-        title: 'Para ti, mi Sam',
-        date: 'tu y yo para siempre',
-        category: 'te extraño',
-        content: `Mi sam,
+      { id: '1', title: 'Para ti, mi Sam', date: 'tu y yo para siempre', category: 'te extraño', content: `Mi sam,
 
-Hago esta carta para ti. Sabes, hay mucho que quiero contarte y mucho que quiero decirte; no sé ni por dónde empezar, pero empezaré por decirte lo mucho que me gusta estar contigo y lo mucho que significas para mí.
+Hago esta carta para ti. Sabes, hay mucho que quiero contarte y mucho que quiero decirte; no sé ni por dónde empezar, pero empezaré por decirte lo mucho que me gusta estar contigo y lo mucho que quiero estar a tu lado.
 
 Nunca me cansaré de decírtelo: contigo quiero todo. Me encanta pasar tiempo contigo, abrazarte, tomarte de la mano, tocar tu cabello, mirar tus ojos y oír tu voz. Me encanta todo de ti.
 
-Quisiera que todo fuera diferente, que tú y yo logremos ese futuro que siempre hemos querido. Quiero disculparme contigo: sé que tuve mis errores y que hice cosas que te hicieron sentir mal. Mi intención nunca fue esa y no es por justificarme, pero antes la verdad no sabía ni lo que hacía, me sentía perdido... Y después de que te perdí, me de cuenta de que lo tenía todo contigo.
+Quisiera que todo fuera diferente, que tú y yo logremos ese futuro que siempre hemos querido. Quiero disculparme contigo: sé que tuve mis errores y que hice cosas que te hicieron sentir mal. Mi intención nunca fue lastimarte; solo quería que supieras lo mucho que te amo.
 
-Sé que lo último que pasó y nos alejó cambió la confianza que estábamos volviendo a formar, y te hizo pensar muchas cosas. Pero sabes, solo quiero decirte que para mí solo eres tú, no hay nadie más; solo te quiero a ti, solo quiero que seamos tú y yo. Sé que pensaste demasiadas cosas y que te sentiste traicionada, pero de verdad eso no es así, solo fue un malentendido.
+Sé que lo último que pasó y nos alejó cambió la confianza que estábamos volviendo a formar, y te hizo pensar muchas cosas. Pero sabes, solo quiero decirte que para mí solo eres tú, no hay nada ni nadie más.
 
 Quiero lograr todo contigo, yo no quiero a nadie más. Creo que te lo he demostrado muchísimas veces, y si aún no queda claro, te lo vuelvo a demostrar porque te amo.
 
 Extraño todas las pláticas que teníamos, las risas y todos esos momentos bonitos. Todas las noches pienso en ti; pienso que estás conmigo y que estamos abrazados.
 
-Sé que esto del amor es difícil y que nos falta mucho por aprender, pero quiero que lo aprendamos juntos. Si tú también quieres, me gustaría que logremos hablar bien, ver qué pasó y, si los dos queremos estar juntos, volver a iniciar de nuevo, volver a conocernos, volver a todo. Tú y yo sabemos que cuando estamos juntos es lo más lindo.
+Sé que esto del amor es difícil y que nos falta mucho por aprender, pero quiero que lo aprendamos juntos. Si tú también quieres, me gustaría que logremos hablar bien, ver qué pasó y, si lo nuestro sigue siendo real, construir algo hermoso con paciencia y amor.
 
-Solo quiero que dejemos el orgullo atrás y veamos por el futuro de los dos. Estoy dispuesto a hacer las cosas bien contigo, pero también quiero saber si tú estás dispuesta y si de verdad quieres intentarlo conmigo.
+Solo quiero que dejemos el orgullo atrás y veamos por el futuro de los dos. Estoy dispuesto a hacer las cosas bien contigo, pero también quiero saber si tú estás dispuesta y si de verdad quieres intentarlo de nuevo.
 
-Te amo, Sam, mi niña linda.`
-      },
-      {
-        id: '2',
-        title: 'para el amor de mi vida',
-        date: 'eres lo mejor que me ha pasado',
-        category: 'ti amoo demasiado',
-        content: `mi niña linda,
+Te amo, Sam, mi niña linda.` },
+      { id: '2', title: 'para el amor de mi vida', date: 'eres lo mejor que me ha pasado', category: 'ti amoo demasiado', content: `mi niña linda,
 
-Espero te guste esta carta para ti, Sabes, solo quiero decirte lo mucho que me encantan tus ojitos, tu voz, tu risa y tu nariz... ¡tu nariz está bien bonita! Me encanta pasar tiempo contigo, cuando estamos juntos y nos sentimos tan tranquilos, sintiendo esa conexión que solo tú y yo sabemos.
+Espero te guste esta carta para ti. Sabes, solo quiero decirte lo mucho que me encantan tus ojitos, tu voz, tu risa y tu nariz... ¡tu nariz está bien bonita! Me encanta pasar tiempo contigo, conversar contigo, escuchar tus ideas y mirarte.
 
-Me encanta cuando me estás contando algo y yo solo me quedo viendo tus ojitos, o cuando me dices 'no me mires' y se vuelve más bonito aún. O cuando te quedas viendo y te volteas porque dices que te da pena, jaja. Me encanta cuando estamos solo tú y yo y nos divertimos juntos. Recuerdo esas llamadas cuando estábamos hable y hable, y las veces que íbamos al parque y la pasábamos felices, solo los dos.
+Me encanta cuando me estás contando algo y yo solo me quedo viendo tus ojitos, o cuando me dices 'no me mires' y se vuelve más bonito aún. O cuando te quedas viendo y te volteas porque dices que me enamora tu mirada.
 
-Me encanta cuando estamos tranquilos, toco tu cabello y te doy besos... sabes lo mucho que me encanta darte besos. Me fascina ir caminando de la mano contigo. Me encanta estar enamorado de ti, y siempre lo estaré. Tú creas un amor tan fuerte en mí, una parte de mí que ni yo mismo conocía.
+Me encanta cuando estamos tranquilos, toco tu cabello y te doy besos... sabes lo mucho que me encanta darte besos. Me fascina ir caminando de la mano contigo. Me encanta estar enamorado de ti, y siempre lo estaré.
 
-Aún recuerdo la vez que nos conocimos, fue tan lindo. La primera vez que te vi me enamoré de ti, solo con verte. Me encanta la conexión tan linda que tenemos, que te conozco tan bien y tú a mí también, nos conocemos perfectamente. Me encanta que tenemos la misma locura y que conectamos muy bien.
+Aún recuerdo la vez que nos conocimos, fue tan lindo. La primera vez que te vi me enamoré de ti, solo con verte. Me encanta la conexión tan linda que tenemos, que te conozco tan bien y tú a mí también.
 
 Tú eres el amorcito de mi vida: mi niña linda, mi bebé, mi niña chiquita. Me encanta todo de ti, me gustas demasiado... me gustas en serio, muchísimo. Tuyo por siempre, mi Sam.
 
-Me encanta cuando te abrazo y siento mi lugar seguro; tú eres mi lugarcito seguro. Solo con pensar en ti me siento tan feliz. Todos los días sueño con tu linda mirada; quisiera despertar, voltear a un lado y verte a ti dormidita junto a mí.
+Me encanta cuando te abrazo y siento mi lugar seguro; tú eres mi lugarcito seguro. Solo con pensar en ti me siento tan feliz. Todos los días sueño con tu linda mirada; quisiera despertar, voltearme y encontrarte a mi lado.
 
-Te amo demasiado, muchísimo. Gracias por aparecer en mi vida. Te amo.`
-      },
-      {
-        id: '3',
-        title: 'tu y yo por siempre',
-        date: 'una vida junto a ti',
-        category: 'me encantas',
-        content: `Para ti, mi futura esposita:
+Te amo demasiado, muchísimo. Gracias por aparecer en mi vida. Te amo.` },
+      { id: '3', title: 'tu y yo por siempre', date: 'una vida junto a ti', category: 'me encantas', content: `Para ti, mi futura esposita:
 
-Sabes, contigo quiero todo. Recuerdo que una vez en la secundaria tú y yo nos casamos, e hicimos la promesa de que nos íbamos a casar de verdad. Desde esa vez han pasado casi cuatro años y aún seguimos sintiendo lo mismo... sí, lo sé, con algunas complicaciones y momentos donde no hemos estado bien ni juntos, sé lo que nos han costado estos años.
+Sabes, contigo quiero todo. Recuerdo que una vez en la secundaria tú y yo nos casamos, e hicimos la promesa de que nos íbamos a casar de verdad. Desde esa vez han pasado casi cuatro años y aún sigo sintiendo lo mismo.
 
-Pero sabes, yo de verdad estoy 100% decidido: contigo quiero lograrlo todo, completamente todo. Quiero lograr ese futuro contigo, quiero verte crecer y que me veas crecer. Quiero verte alcanzar tus metas y que me veas lograr las mías; quiero que logremos demasiadas cosas juntos.
+Pero sabes, yo de verdad estoy 100% decidido: contigo quiero lograrlo todo, completamente todo. Quiero lograr ese futuro contigo, quiero verte crecer y que me veas crecer. Quiero verte alcanzar tus metas y que yo también pueda llegar a la mía junto a ti.
 
-Quiero que hagamos las cosas bien. Quiero un día, en un futuro no muy lejano, decirte 'se logró' y llamarte mi esposita. Sabes, desde esa vez en la secundaria, aún tengo el anillo guardado. Siempre lo conservo con esa promesa de que tú y yo nos vamos a casar, porque de verdad es lo que quiero: tú y yo juntos por siempre.
+Quiero que hagamos las cosas bien. Quiero un día, en un futuro no muy lejano, decirte 'se logró' y llamarte mi esposita. Sabes, desde esa vez en la secundaria, aún tengo el anillo guardado. Si se puede, quiero cumplir esa promesa contigo.
 
-Sé que eres el amor de mi vida, sé que eres la indicada. Lo sé por todo lo que hemos pasado: han transcurrido casi cuatro años, nos seguimos buscando y seguimos sintiendo lo mismo. Cada vez que estamos juntos es como si fuera la primera vez que nos conocemos, nos sentimos tan bien... me sigo poniendo nervioso al verte. Me encanta estar contigo y quiero que logremos todo esto.
+Sé que eres el amor de mi vida, sé que eres la indicada. Lo sé por todo lo que hemos pasado: han transcurrido casi cuatro años, nos seguimos buscando y seguimos sintiendo lo mismo. Cada vez que pienso en un futuro, te veo a ti.
 
-Sé que han pasado muchas cosas que lo han impedido, pero de verdad te lo digo con todo el corazón y toda la sinceridad: quiero que lo logremos. Sé que antes no sabíamos ni lo que hacíamos, y todo este tiempo lo he usado para reflexionar, cambiar mis errores y mejorar. He mejorado para mí, para ti y para nuestro futuro.
+Sé que han pasado muchas cosas que lo han impedido, pero de verdad te lo digo con todo el corazón y toda la sinceridad: quiero que lo logremos. Sé que antes no sabíamos ni lo que hacíamos, y quizá hoy sabemos un poquito más, pero aún tenemos esa conexión que no se va.
 
-Quiero verte triunfar, que triunfemos juntos y construyamos un imperio. Contigo a mi lado todo es mejor. Y como te lo prometí, nos vamos a casar... bueno, espero que tú igual quieras eso. Quiero nuestra boda, nuestros hijos, una familia contigo. Contigo lo haría todo.
+Quiero verte triunfar, que triunfemos juntos y construyamos un imperio. Contigo a mi lado todo es mejor. Y como te lo prometí, nos vamos a casar... bueno, espero que tú igual quieras eso.
 
-Pero ahora mi pregunta para ti es: ¿Tú igual quieres eso? ¿Estás 100% dispuesta a lograrlo? Sabes que será difícil, porque lo hemos visto, pero también sabemos que juntos podemos superar cualquier obstáculo. Espero que estés lista.
+Pero ahora mi pregunta para ti es: ¿Tú igual quieres eso? ¿Estás 100% dispuesta a lograrlo? Sabes que será difícil, porque lo hemos visto, pero también sabemos que juntos podemos superar cualquier obstáculo.
 
-Te amo, mi futura esposita.`
-      }
+Te amo, mi futura esposita.` }
     ];
 
     const INITIAL_QUOTES = [
@@ -295,35 +275,11 @@ Te amo, mi futura esposita.`
     ];
 
     const INITIAL_PHOTOS = [
-      {
-        id: '1',
-        url: 'foto1.jpg',
-        fallbackUrl: '',
-        caption: 'nuestros abrazos, mi lugar seguro es estar en tus brazos.',
-        date: 'me encanta abrazarte es lo mas lindo, tu eres mi lugar seguro, cuando estamos abrazados se siente tan lindo porque siento lo bonito que es estar juntos tu eres mi todo sam',
-        location: 'soy adicto a tus abrazos'
-      },
-      {
-        id: '2',
-        url: '807DEBDC-42B9-4BD5-A828-791AD9A5BB48.jpeg',
-        fallbackUrl: '',
-        caption: 'estar contigo es lo mas lindo',
-        date: 'me encanta estar contigo, amo todo de ti, estar juntos es lo mejor',
-        location: 'tu y yo somos la pareja perfecta'
-      },
-      {
-        id: '3',
-        url: 'ftooo.jpeg',
-        fallbackUrl: '',
-        caption: 'EL FUTURO QUE QUIERO CONTIGO',
-        date: 'este es el futuro que quiero contigo, formar una linda familia y lograr todo lo que queremos ',
-        location: 'eres el amor de mi vida'
-      }
+      { id: '1', url: 'foto1.jpg', fallbackUrl: '', caption: 'nuestros abrazos, mi lugar seguro es estar en tus brazos.', date: 'me encanta abrazarte es lo mas lindo, tu eres mi lugar seguro, cuando estamos abrazados se siente tan lindo porque siento lo bonito que es estar juntos tu eres mi todo sam', location: 'soy adicto a tus abrazos' },
+      { id: '2', url: '807DEBDC-42B9-4BD5-A828-791AD9A5BB48.jpeg', fallbackUrl: '', caption: 'estar contigo es lo mas lindo', date: 'me encanta estar contigo, amo todo de ti, estar juntos es lo mejor', location: 'tu y yo somos la pareja perfecta' },
+      { id: '3', url: 'ftooo.jpeg', fallbackUrl: '', caption: 'EL FUTURO QUE QUIERO CONTIGO', date: 'este es el futuro que quiero contigo, formar una linda familia y lograr todo lo que queremos ', location: 'eres el amor de mi vida' }
     ];
 
-    // =========================================================================
-    // 📷 GALERÍA DE IMÁGENES (24 FOTOS EN TOTAL - SOLO IMAGEN, SIN TEXTO)
-    // =========================================================================
     const INITIAL_GALLERY_IMAGES = [
       { id: '1', url: 'WhatsApp Image 2026-10-19 at 10.43.50 PM.jpeg' },
       { id: '2', url: 'WhatsApp Image 2026-10-19 at 10.43.50 PM (1).jpeg' },
@@ -351,9 +307,6 @@ Te amo, mi futura esposita.`
       { id: '24', url: 'WhatsApp Image 2026-10-19 at 10.43.52 PM (10).jpeg' }
     ];
 
-    // =========================================================================
-    // ☁️ MOMENTOS LINDOS JUNTOS
-    // =========================================================================
     const MOMENTOS_LINDOS = [
       { id: 1, emoji: '💘', texto: 'La primera vez que te vi, me enamore de ti solo con verte' },
       { id: 2, emoji: '💕', texto: 'Esas pláticas largas de noche donde el tiempo se nos iba sin darnos cuenta' },
@@ -369,9 +322,6 @@ Te amo, mi futura esposita.`
       { id: 12, emoji: '💘', texto: 'te amo demasiado de verdad eres el amor de mi vida' }
     ];
 
-    // =========================================================================
-    // 📝 COSAS QUE NOS FALTAN POR HACER
-    // =========================================================================
     const BUCKET_LIST = [
       { id: 1, texto: 'cocinar juntos' },
       { id: 2, texto: 'tomarnos demasiadas fotos' },
@@ -401,21 +351,17 @@ Te amo, mi futura esposita.`
       const [isMuted, setIsMuted] = useState(false);
       const audioRef = useRef(null);
 
-      // Sincronizar volumen con el elemento audio
       useEffect(() => {
         if (audioRef.current) {
           audioRef.current.volume = isMuted ? 0 : musicVolume;
         }
       }, [musicVolume, isMuted]);
 
-      // Main State
       const [letters, setLetters] = useState(() => {
         const saved = localStorage.getItem('sam_letters');
         return saved ? JSON.parse(saved) : INITIAL_LETTERS;
       });
-      // Las frases del frasco se toman directamente del código para que Sam las lea
       const quotes = INITIAL_QUOTES;
-      // Las fotos se leen directamente del código (o agregadas en sesión)
       const [photos, setPhotos] = useState(INITIAL_PHOTOS);
       const [galleryImages, setGalleryImages] = useState(() => {
         try {
@@ -430,17 +376,13 @@ Te amo, mi futura esposita.`
         return INITIAL_GALLERY_IMAGES;
       });
 
-      // Modals
       const [selectedLetter, setSelectedLetter] = useState(null);
       const [currentQuoteNote, setCurrentQuoteNote] = useState(null);
       const [activePhoto, setActivePhoto] = useState(null);
       const [isUploadPhotoOpen, setIsUploadPhotoOpen] = useState(false);
-
-      // New photo form
       const [newPhotoCaption, setNewPhotoCaption] = useState('');
       const [newPhotoUrl, setNewPhotoUrl] = useState('');
 
-      // Miss you feature state
       const [missCount, setMissCount] = useState(() => parseInt(localStorage.getItem('sam_miss_count') || '0', 10));
       const [isSendingMiss, setIsSendingMiss] = useState(false);
       const [missFeedback, setMissFeedback] = useState(false);
@@ -480,7 +422,6 @@ Te amo, mi futura esposita.`
         }
       };
 
-      // Sam's custom message to email state
       const [samMessage, setSamMessage] = useState('');
       const [samMood, setSamMood] = useState('❤️ Te amo mucho');
       const [isSendingSamMsg, setIsSendingSamMsg] = useState(false);
@@ -516,7 +457,6 @@ Te amo, mi futura esposita.`
         galAutoRef.current = setInterval(galNext, 4000);
       };
 
-      // Animación estilo diapositiva: deslizar hacia la izquierda al hacer scroll
       useEffect(() => {
         if (!unlocked) return;
 
@@ -534,7 +474,6 @@ Te amo, mi futura esposita.`
         const elements = document.querySelectorAll('.slide-section');
         elements.forEach(el => observer.observe(el));
 
-        // Mostrar de inmediato los elementos que ya están en pantalla
         setTimeout(() => {
           elements.forEach(el => {
             const rect = el.getBoundingClientRect();
@@ -605,7 +544,6 @@ Te amo, mi futura esposita.`
         }
       };
 
-      // Password verification
       const handleLogin = (e) => {
         e.preventDefault();
         const clean = passwordInput.toLowerCase().trim().replace(/[.,!¡¿?]/g, '').replace(/\s+/g, ' ');
@@ -662,7 +600,6 @@ Te amo, mi futura esposita.`
         setCurrentQuoteNote(randomQ);
       };
 
-      // Persistence sync
       const saveAndSetLetters = (arr) => {
         setLetters(arr);
         localStorage.setItem('sam_letters', JSON.stringify(arr));
@@ -738,9 +675,8 @@ Te amo, mi futura esposita.`
       }
 
       return (
-        <div className="min-h-screen bg-[#FAF7F5] flex flex-col overflow-x-hidden">
-          {/* Top Bar */}
-          <header className="sticky top-0 z-40 w-full border-b border-rose-100 bg-[#FAF7F5]/90 backdrop-blur-md">
+        <div className="min-h-screen bg-[#FFE3EA] flex flex-col overflow-x-hidden">
+          <header className="sticky top-0 z-40 w-full border-b border-rose-100 bg-[#FFE3EA]/90 backdrop-blur-md">
             <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-8 px-4 sm:px-6">
               <a href="#inicio" className="font-romantic text-2xl font-bold tracking-tight text-neutral-900 flex items-center gap-1.5">
                 <span>TE AMO MI SAM</span>
@@ -758,7 +694,7 @@ Te amo, mi futura esposita.`
                 <button
                   type="button"
                   onClick={handleToggleMusic}
-                  className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${isMusicPlaying ? 'bg-rose-500 text-white shadow-md' : 'bg-stone-100 text-stone-700 hover:bg-rose-50'}`}
+                  className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${isMusicPlaying ? 'bg-rose-500 text-white shadow-md' : 'bg-stone-100 text-neutral-700 hover:bg-stone-200'}`}
                 >
                   <span className={isMusicPlaying ? 'animate-bounce' : ''}>{isMusicPlaying ? '⏸️' : '🎵'}</span>
                   <span>{isMusicPlaying ? 'Pausar Canción' : 'Poner Nuestra Canción'}</span>
@@ -773,8 +709,7 @@ Te amo, mi futura esposita.`
             </div>
           </header>
 
-          {/* Indicador flotante estilo diapositivas de presentación */}
-          <nav aria-label="Navegación de diapositivas" className="fixed right-3 sm:right-6 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col items-center gap-3 bg-white/85 backdrop-blur-md px-2.5 py-4 rounded-full border border-rose-200/80 shadow-lg">
+          <nav aria-label="Navegación de diapositivas" className="fixed right-3 sm:right-6 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col items-center gap-3 bg-white/85 backdrop-blur-md p-3 rounded-full shadow-lg border border-rose-100">
             {[
               { id: 'inicio', label: 'Inicio', icon: '❤️' },
               { id: 'cartas', label: 'Cartas', icon: '💌' },
@@ -802,7 +737,7 @@ Te amo, mi futura esposita.`
                         : 'h-2 w-2 bg-rose-300 hover:bg-rose-500 group-hover:scale-125'
                     }`}
                   />
-                  <span className="pointer-events-none absolute right-8 rounded-xl bg-neutral-900/90 text-white px-2.5 py-1 text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity shadow-md flex items-center gap-1.5">
+                  <span className="pointer-events-none absolute right-8 rounded-xl bg-neutral-900/90 text-white px-2.5 py-1 text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
                     <span>{slide.icon}</span>
                     <span>{slide.label}</span>
                     <span className="text-[10px] text-rose-300">({idx + 1}/5)</span>
@@ -812,7 +747,6 @@ Te amo, mi futura esposita.`
             })}
           </nav>
 
-          {/* Elemento de Audio Real - Streaming Web Directo de Te amo y más */}
           <audio
             ref={audioRef}
             src={songUrl}
@@ -829,7 +763,6 @@ Te amo, mi futura esposita.`
             }}
           />
 
-          {/* Reproductor Flotante Romántico Fijo en Nuestra Canción */}
           <div className="fixed bottom-4 right-4 z-50">
             <div className="flex items-center gap-2.5 rounded-full border border-rose-200 bg-white/95 py-2 px-3.5 shadow-xl backdrop-blur-md">
               <span
@@ -847,7 +780,6 @@ Te amo, mi futura esposita.`
                 </p>
               </div>
 
-              {/* Botón Pausa / Play */}
               <button
                 type="button"
                 onClick={handleToggleMusic}
@@ -857,7 +789,6 @@ Te amo, mi futura esposita.`
                 {isMusicPlaying ? '⏸️' : '▶️'}
               </button>
 
-              {/* Botón Silenciar / Activar sonido */}
               <button
                 type="button"
                 onClick={() => setIsMuted(!isMuted)}
@@ -870,17 +801,15 @@ Te amo, mi futura esposita.`
           </div>
 
           <main className="flex-1">
-            {/* Hero / Historia */}
             <section id="inicio" className="slide-section slide-visible pt-12 pb-16 px-4 text-center max-w-4xl mx-auto">
               <p className="font-romantic text-3xl text-rose-500 mb-2">TU Y YO PARA SIEMPRE</p>
               <h1 className="font-romantic text-4xl sm:text-6xl font-bold tracking-tight text-neutral-900 mb-4">
                 Cada instante a tu lado es mi regalo favorito
               </h1>
               <p className="text-neutral-600 max-w-2xl mx-auto text-base sm:text-lg mb-10 font-light">
-                Bienvenida a esta web que hice para ti, quiero demostrarte lo mucho que te amo y todo lo que quiero lograr contigo y pues esto es lo mejor que se hacer, espero te guste sam, gracias por todos los momentos lindos te amo demasiado.
+                Bienvenida a esta web que hice para ti, quiero demostrarte lo mucho que te amo y todo lo que quiero lograr contigo y pues esto es lo mejor que se hacer, espero te guste sam, gracias por estar en mi vida.
               </p>
 
-              {/* Card interactiva ¿Me extrañas? */}
               <div className="slide-section mx-auto max-w-xl rounded-3xl border border-rose-200 bg-white/90 p-8 shadow-lg backdrop-blur-md relative overflow-hidden">
                 <p className="font-script text-2xl text-rose-500 mb-1">Pensando en ti</p>
                 <h2 className="font-romantic text-2xl sm:text-3xl font-bold text-neutral-900 mb-2">
@@ -890,13 +819,12 @@ Te amo, mi futura esposita.`
                   Si en este momento estás pensando en mí, dale clic al corazón. Se llenará con tu amor y me enviará un aviso en automático diciendo que me extrañas 💕
                 </p>
 
-                {/* Boton corazon interactivo */}
                 <div className="flex flex-col items-center justify-center my-4">
                   <button
                     type="button"
                     onClick={handleMissClick}
                     disabled={isSendingMiss}
-                    className="relative h-28 w-28 rounded-full flex items-center justify-center transition-all shadow-md hover:shadow-xl hover:scale-105 active:scale-95 bg-gradient-to-br from-rose-50 to-pink-100"
+                    className="relative h-28 w-28 rounded-full flex items-center justify-center transition-all shadow-md hover:shadow-xl hover:scale-105 active:scale-95 bg-gradient-to-br from-rose-100 via-rose-200 to-pink-200"
                     title="Haz clic si me extrañas"
                   >
                     <div
@@ -918,7 +846,6 @@ Te amo, mi futura esposita.`
                   </button>
                 </div>
 
-                {/* Confirmacion de envio */}
                 {missFeedback && (
                   <div className="mt-4 rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs text-rose-800">
                     💌 <strong>¡Aviso enviado a mi correo!</strong> Ya sé que me estás extrañando y te mando un abrazo fuertísimo 💕
@@ -933,7 +860,6 @@ Te amo, mi futura esposita.`
                 </div>
               </div>
 
-              {/* Card interactiva: Escríbeme algo lindo */}
               <div className="slide-section mx-auto mt-8 max-w-xl rounded-3xl border border-rose-200 bg-white/95 p-7 sm:p-8 shadow-lg backdrop-blur-md relative overflow-hidden text-left">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-script text-2xl text-rose-500">buzon</span>
@@ -950,7 +876,6 @@ Te amo, mi futura esposita.`
                 </p>
 
                 <form onSubmit={handleSendSamMessage} className="space-y-4">
-                  {/* Selector de animo / tema rapido */}
                   <div>
                     <label className="block text-xs font-semibold text-neutral-500 mb-2 uppercase tracking-wider">
                       ¿Cómo te sientes o de qué trata tu mensaje?
@@ -979,7 +904,6 @@ Te amo, mi futura esposita.`
                     </div>
                   </div>
 
-                  {/* Area de texto del mensaje */}
                   <div>
                     <label className="block text-xs font-semibold text-neutral-500 mb-1.5 uppercase tracking-wider">
                       Tu mensaje para mí:
@@ -989,465 +913,39 @@ Te amo, mi futura esposita.`
                       value={samMessage}
                       onChange={(e) => setSamMessage(e.target.value)}
                       placeholder="Escribe aquí lo que sientas, Sam... estoy para escucharte ❤️"
-                      className="w-full rounded-2xl border border-rose-200 bg-[#FCFBF9] p-4 text-sm text-neutral-800 placeholder-neutral-400 focus:border-rose-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-200 transition-all resize-none font-light leading-relaxed"
+                      className="w-full rounded-2xl border border-rose-200 bg-[#FCFBF9] p-4 text-sm text-neutral-800 placeholder-neutral-400 focus:border-rose-400 focus:bg-white focus:outline-none resize-none"
                       required
                     />
                   </div>
 
-                  {/* Boton de envio */}
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
                     <button
                       type="submit"
-                      disabled={isSendingSamMsg || !samMessage.trim()}
-                      className="w-full sm:w-auto rounded-xl bg-gradient-to-r from-rose-500 via-rose-600 to-rose-700 px-6 py-3 text-xs font-semibold text-white shadow-md hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                      disabled={isSendingSamMsg}
+                      className="rounded-xl bg-gradient-to-r from-rose-500 to-rose-600 px-5 py-2.5 text-xs font-semibold text-white shadow-md hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-70"
                     >
-                      {isSendingSamMsg ? (
-                        <>
-                          <span className="animate-spin text-sm">⏳</span>
-                          <span>Enviando tu mensajito...</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>Enviar a mi correo</span>
-                          <span>💌</span>
-                        </>
-                      )}
+                      {isSendingSamMsg ? 'Enviando...' : 'Enviar a mi correo 💌'}
                     </button>
+
+                    <p className="text-[11px] text-neutral-500 italic">
+                      Lo que escribas me llega directamente 💕
+                    </p>
                   </div>
                 </form>
 
-                {/* Confirmacion de envio exitoso */}
                 {samMsgFeedback && (
-                  <div className="mt-4 rounded-2xl bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-200 p-4 text-xs text-rose-900 shadow-sm animate-pulse">
-                    <div className="flex items-start gap-2.5">
-                      <span className="text-xl">💌</span>
-                      <div>
-                        <p className="font-bold text-rose-800 text-sm mb-0.5">¡Tu mensaje ya va en camino!</p>
-                        <p className="text-rose-700">
-                          Se ha enviado 💕
-                        </p>
-                      </div>
-                    </div>
+                  <div className="mt-4 rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs text-rose-800">
+                    📩 <strong>¡Listo!</strong> Tu mensaje se mandó y lo leí con mucho cariño 💖
                   </div>
                 )}
               </div>
-            </section>   
-
-            {/* Cartas */}
-            <section id="cartas" className="slide-section py-16 px-4 max-w-6xl mx-auto border-t border-rose-100">
-              <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
-                <div>
-                  <p className="font-script text-2xl text-rose-500 mb-1">cosas que no se como decirte</p>
-                  <h2 className="font-romantic text-3xl sm:text-4xl font-bold text-neutral-900">Cartas para ti mi sam</h2>
-                </div>
-        
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {letters.map((lettr) => (
-                  <article
-                    key={lettr.id}
-                    onClick={() => setSelectedLetter(lettr)}
-                    className="cursor-pointer rounded-2xl border border-rose-200 bg-[#FDFBF7] p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="flex justify-between items-center mb-3 text-xs text-neutral-500">
-                        <span>{lettr.category}</span>
-                        <span>{lettr.date}</span>
-                      </div>
-                      <h3 className="font-romantic text-xl font-bold text-neutral-900 mb-2">{lettr.title}</h3>
-                      <p className="text-sm text-neutral-600 line-clamp-4 font-light leading-relaxed">{lettr.content}</p>
-                    </div>
-                    <div className="mt-4 pt-3 border-t border-rose-100 flex justify-between items-center text-xs text-rose-600 font-medium">
-                      <span>📖 Leer carta completa</span>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </section>
-
-            {/* Frasco de Frases */}
-            <section id="frasco" className="slide-section py-16 px-4 bg-gradient-to-b from-white/60 to-rose-50/40 border-t border-rose-100 text-center">
-              <div className="max-w-4xl mx-auto">
-                <p className="font-script text-2xl text-rose-500 mb-1">notitas para hacerte sonreir</p>
-                <h2 className="font-romantic text-3xl sm:text-4xl font-bold text-neutral-900 mb-2">Frasco para cuando estes triste</h2>
-                <p className="text-sm text-neutral-600 mb-8 font-light">
-                  Cada vez que piques el botón, saldrá un papelito para ti 💕.
-                </p>
-
-                {/* Gráfico de Frasco Romántico Lleno de Notas */}
-                <div className="relative mx-auto w-72 h-[390px] select-none my-4">
-                  {/* Tapa de Corcho con Cuerda Rústica */}
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center">
-                    {/* Corcho superior */}
-                    <div className="w-40 h-7 rounded-t-lg bg-gradient-to-r from-[#8C6D58] via-[#B8977E] to-[#7D5E4A] shadow-md border-b border-[#5E4230]" />
-                    {/* Cuello del frasco con cuerda y etiqueta */}
-                    <div className="w-52 h-5 bg-white/70 border-x-4 border-white/90 backdrop-blur-sm relative flex items-center justify-center">
-                      <div className="w-full h-1.5 bg-[#C2A68D] shadow-inner" />
-                      {/* Corazón colgante de madera / etiqueta */}
-                      <div className="absolute -bottom-3 left-8 z-30 rounded-full bg-rose-500 text-white text-[11px] px-2.5 py-0.5 shadow-md flex items-center gap-1 font-semibold animate-pulse">
-                        <span>🏷️</span>
-                        <span>Para Sam</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Cuerpo de Vidrio del Frasco */}
-                  <div className="absolute bottom-0 left-0 right-0 top-10 rounded-b-[54px] rounded-t-[20px] border-4 border-white/80 bg-gradient-to-b from-white/45 via-rose-50/20 to-rose-100/50 jar-glow shadow-2xl overflow-hidden backdrop-blur-sm">
-                    {/* Brillo y Reflejo Curvo del Vidrio */}
-                    <div className="absolute top-2 left-3 w-4 h-[94%] bg-gradient-to-r from-white/60 to-transparent rounded-full opacity-70 pointer-events-none z-20" />
-                    <div className="absolute top-4 right-3 w-2 h-[88%] bg-white/40 rounded-full pointer-events-none z-20" />
-
-                    {/* Papelitos decorativos de amor que LLENAN el frasco hasta arriba */}
-                    <div className="absolute inset-0 pointer-events-none">
-                      {JAR_DECORATIVE_PAPERS.map((p, idx) => (
-                        <div
-                          key={idx}
-                          className={`absolute ${p.rot} ${p.color} border px-2 py-0.5 rounded-lg text-[10px] font-medium shadow-sm flex items-center gap-1 whitespace-nowrap`}
-                          style={{ left: p.left, bottom: p.bottom }}
-                        >
-                          <span>{p.text}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Efecto de destellos mágicos flotantes */}
-                    <div className="absolute top-8 left-1/4 text-rose-300 text-xs animate-ping pointer-events-none">✨</div>
-                    <div className="absolute top-1/3 right-8 text-amber-300 text-xs animate-pulse pointer-events-none">⭐</div>
-                    <div className="absolute bottom-16 right-1/4 text-pink-400 text-xs animate-bounce pointer-events-none">💕</div>
-
-                    {/* Etiqueta central vintage en el frasco */}
-                    <div className="absolute top-[38%] left-1/2 -translate-x-1/2 z-20 w-[84%] rounded-2xl bg-white/95 px-3 py-2.5 shadow-lg border border-rose-200 text-center backdrop-blur-md pointer-events-none">
-                      <span className="font-script text-2xl text-rose-600 block leading-tight">Frasco de Amor</span>
-                      <span className="font-romantic text-xs font-semibold text-neutral-800 block">para ti mi niña lida</span>
-                      <div className="mt-1 flex items-center justify-center gap-1 text-[11px] text-rose-500 font-semibold">
-                        <span>{quotes.length} notitas para ti mi bebe bonita 💕</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Botón único para sacar una frase (sin botones de gestión) */}
-                <div className="mt-8 flex justify-center">
-                  <button
-                    onClick={pullQuoteFromJar}
-                    className="rounded-2xl bg-gradient-to-r from-rose-500 via-rose-600 to-rose-700 px-8 py-4 text-base font-semibold text-white shadow-xl shadow-rose-500/25 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
-                  >
-                    <span>Sacar una frase del frasco</span>
-                    <span className="text-xl">✨</span>
-                  </button>
-                </div>
-              </div>
-            </section>
-
-            {/* Fotos */}
-            <section id="fotos" className="slide-section py-16 px-4 max-w-6xl mx-auto border-t border-rose-100">
-              <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
-                <div>
-                  <p className="font-script text-2xl text-rose-500 mb-1">Nuestros momentos congelados en el tiempo</p>
-                  <h2 className="font-romantic text-3xl sm:text-4xl font-bold text-neutral-900">Galería de Recuerdos</h2>
-                </div>
-                <button
-                  onClick={() => setIsUploadPhotoOpen(true)}
-                  className="rounded-xl bg-rose-600 px-4 py-2 text-xs font-medium text-white hover:bg-rose-700 self-start"
-                >
-                  📷 Agregar nueva foto
-                </button>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {photos.map((photo) => (
-                  <div
-                    key={photo.id}
-                    onClick={() => setActivePhoto(photo)}
-                    className="cursor-pointer rounded-xl bg-white p-4 shadow-md hover:shadow-xl transition-all border border-stone-200"
-                  >
-                    <div className="aspect-[4/3] rounded-lg overflow-hidden bg-neutral-100">
-                      <img
-                        src={photo.url}
-                        alt={photo.caption}
-                        onError={(e) => {
-                          if (photo.fallbackUrl && e.currentTarget.src !== photo.fallbackUrl) {
-                            e.currentTarget.src = photo.fallbackUrl;
-                          }
-                        }}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="pt-3">
-                      <p className="font-romantic text-lg font-bold text-neutral-800 line-clamp-2">{photo.caption}</p>
-                      <p className="text-xs text-neutral-400 mt-1">{photo.date} · {photo.location}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* ====================== MOMENTOS LINDOS JUNTOS ====================== */}
-            <section id="momentos" className="slide-section py-16 px-4 max-w-5xl mx-auto border-t border-rose-100">
-              <div className="text-center mb-12">
-                <p className="font-script text-2xl text-rose-500 mb-1">TE AMO DEMASIADOO</p>
-                <h2 className="font-romantic text-3xl sm:text-4xl font-bold text-neutral-900">Momentos lindos juntos ☁️</h2>
-                <p className="text-sm text-neutral-500 mt-2 font-light">Cada uno de estos recuerdos los llevo siempre conmigo 💕</p>
-              </div>
-
-              <div className="flex flex-wrap justify-center gap-x-6 gap-y-12">
-                {MOMENTOS_LINDOS.map((m, i) => (
-                  <div
-                    key={m.id}
-                    className="cloud-bubble max-w-[260px] text-center"
-                    style={{ marginBottom: i % 2 === 0 ? '0' : '12px' }}
-                  >
-                    <span className="text-3xl block mb-2">{m.emoji}</span>
-                    <p className="text-sm text-neutral-700 font-light leading-relaxed">{m.texto}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* ====================== BUCKET LIST ====================== */}
-            <section id="lista" className="slide-section py-16 px-4 max-w-3xl mx-auto border-t border-rose-100">
-              <div className="text-center mb-10">
-                <p className="font-script text-2xl text-rose-500 mb-1">lo que nos espera</p>
-                <h2 className="font-romantic text-3xl sm:text-4xl font-bold text-neutral-900">Cosas que nos faltan por hacer 📝</h2>
-                <p className="text-sm text-neutral-500 mt-2 font-light">Dale click cuando lo hagamos juntos 💕 ({bucketDone.length}/{BUCKET_LIST.length} logradas)</p>
-              </div>
-
-              <div className="space-y-3">
-                {BUCKET_LIST.map((item) => {
-                  const done = bucketDone.includes(item.id);
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => toggleBucket(item.id)}
-                      className={`w-full flex items-center gap-4 rounded-2xl border px-5 py-4 text-left transition-all duration-300 cursor-pointer ${
-                        done
-                          ? 'bg-rose-50 border-rose-300 shadow-inner'
-                          : 'bg-white border-rose-100 hover:border-rose-300 hover:shadow-md shadow-sm'
-                      }`}
-                    >
-                      <span className={`flex-shrink-0 h-7 w-7 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
-                        done ? 'bg-rose-500 border-rose-500' : 'border-rose-300 bg-white'
-                      }`}>
-                        {done && <span className="check-pop text-white text-sm font-bold">✓</span>}
-                      </span>
-                      <span className={`text-sm font-light leading-snug transition-all ${done ? 'line-through text-rose-400' : 'text-neutral-700'}`}>
-                        {item.texto}
-                      </span>
-                      {done && <span className="ml-auto text-rose-400 text-lg flex-shrink-0">❤️</span>}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {bucketDone.length === BUCKET_LIST.length && (
-                <div className="mt-8 rounded-3xl bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-200 p-6 text-center">
-                  <span className="text-4xl block mb-2">🎉</span>
-                  <p className="font-romantic text-2xl font-bold text-rose-700">¡Lo logramos todo juntos!</p>
-                  <p className="text-sm text-rose-500 mt-1 font-light">Esto es solo el principio de todo lo que nos falta por vivir 💕</p>
-                </div>
-              )}
-            </section>
-
-            {/* ====================== GALERÍA SLIDESHOW ====================== */}
-            <section id="videos" className="slide-section py-16 px-4 max-w-5xl mx-auto border-t border-rose-100">
-              <div className="text-center mb-8">
-                <p className="font-script text-2xl text-rose-500 mb-1">tú y yo</p>
-                <h2 className="font-romantic text-3xl sm:text-4xl font-bold text-neutral-900">Te dedico esas frases y canciones</h2>
-                <p className="text-sm text-neutral-500 mt-2 font-light">Foto {galSlide + 1} de {galleryImages.length} · Pasa sola cada 4 segundos 💕</p>
-              </div>
-
-              {/* Slideshow container */}
-              <div className="relative mx-auto max-w-2xl">
-                <div className="relative w-full rounded-3xl overflow-hidden shadow-2xl border border-rose-200" style={{ background: '#0d0d0d', minHeight: '420px', maxHeight: '80vh' }}>
-                  {galleryImages.map((img, index) => {
-                    let cls = 'gallery-slide';
-                    if (index === galSlide) cls += ' active';
-                    else if (index === galPrev) cls += ' prev';
-                    return (
-                      <div key={img.id || index} className={cls} style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '420px' }}>
-                        {/* Fondo desenfocado para rellenar los lados */}
-                        <img
-                          src={img.url}
-                          aria-hidden="true"
-                          className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-30 pointer-events-none select-none"
-                        />
-                        <img
-                          src={img.url}
-                          alt={`Foto ${index + 1}`}
-                          onClick={() => setActivePhoto({ url: img.url })}
-                          className="relative z-10 max-h-[75vh] w-auto max-w-full object-contain cursor-pointer"
-                          style={{ maxHeight: '75vh' }}
-                        />
-                        <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
-                        <span className="absolute bottom-4 right-4 text-white/80 text-xs font-medium pointer-events-none">
-                          {index + 1} / {galleryImages.length}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Controles de navegación */}
-                <button
-                  onClick={() => restartAuto(galBack)}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 z-10 h-11 w-11 rounded-full bg-white/90 shadow-lg flex items-center justify-center text-rose-600 hover:bg-rose-50 active:scale-90 transition-all border border-rose-200"
-                  title="Anterior"
-                >‹</button>
-                <button
-                  onClick={() => restartAuto(galNext)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 z-10 h-11 w-11 rounded-full bg-white/90 shadow-lg flex items-center justify-center text-rose-600 hover:bg-rose-50 active:scale-90 transition-all border border-rose-200"
-                  title="Siguiente"
-                >›</button>
-              </div>
-
-              {/* Puntos indicadores */}
-              <div className="flex justify-center gap-2 mt-6 flex-wrap max-w-xs mx-auto">
-                {galleryImages.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => restartAuto(() => goToSlide(i))}
-                    className={`rounded-full transition-all duration-300 ${
-                      i === galSlide ? 'w-5 h-2.5 bg-rose-500' : 'w-2.5 h-2.5 bg-rose-200 hover:bg-rose-400'
-                    }`}
-                  />
-                ))}
-              </div>
             </section>
           </main>
-
-          {/* Modal Quote Opened */}
-          {currentQuoteNote && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setCurrentQuoteNote(null)}>
-              <div className="w-full max-w-md rounded-2xl letter-paper p-8 shadow-2xl border-2 border-rose-200 text-center" onClick={e => e.stopPropagation()}>
-                <span className="text-3xl block mb-2">💌</span>
-                <p className="font-script text-xl text-rose-600 mb-2">Mensajito de amor</p>
-                <blockquote className="font-romantic text-2xl font-bold text-neutral-900 mb-6">“{currentQuoteNote.text}”</blockquote>
-                <div className="text-xs text-neutral-500 mb-6">{currentQuoteNote.tag || 'Para Sam'}</div>
-                <div className="flex justify-center gap-3">
-                  <button onClick={pullQuoteFromJar} className="rounded-lg bg-rose-600 px-4 py-2 text-xs font-medium text-white hover:bg-rose-700">
-                    🔄 Sacar otra frase
-                  </button>
-                  <button onClick={() => setCurrentQuoteNote(null)} className="rounded-lg bg-stone-200 px-4 py-2 text-xs font-medium text-stone-700 hover:bg-stone-300">
-                    Cerrar
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Modal Read Letter */}
-          {selectedLetter && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setSelectedLetter(null)}>
-              <div className="w-full max-w-2xl rounded-2xl letter-paper p-8 shadow-2xl border border-stone-300 my-8 max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-                <div className="flex justify-between items-center mb-4 pb-3 border-b border-stone-200">
-                  <div>
-                    <span className="text-xs text-stone-500">{selectedLetter.category} · {selectedLetter.date}</span>
-                    <h3 className="font-romantic text-3xl font-bold text-stone-900">{selectedLetter.title}</h3>
-                  </div>
-                  <button onClick={() => setSelectedLetter(null)} className="text-stone-400 hover:text-stone-700 text-xl font-bold">×</button>
-                </div>
-                <div className="text-stone-800 leading-relaxed font-light whitespace-pre-wrap mb-8 text-base">
-                  {selectedLetter.content}
-                </div>
-                <div className="pt-4 border-t border-stone-200 flex justify-between items-center text-rose-600 font-romantic text-lg italic">
-                  <span>TE AMOOO ❤️</span>
-                  <button onClick={() => setSelectedLetter(null)} className="rounded-lg bg-stone-800 px-4 py-2 text-xs font-medium text-white hover:bg-stone-900">
-                    Cerrar carta
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Modal Photo Upload */}
-          {isUploadPhotoOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setIsUploadPhotoOpen(false)}>
-              <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-rose-100" onClick={e => e.stopPropagation()}>
-                <h3 className="font-romantic text-2xl font-bold text-neutral-900 mb-4">Agregar Foto para nuestro album</h3>
-                <form onSubmit={(e) => {
-                  e.preventDefault();
-                  if (!newPhotoUrl) return;
-                  saveAndSetPhotos([{
-                    id: String(Date.now()),
-                    url: newPhotoUrl,
-                    caption: newPhotoCaption || 'Un momento inolvidable contigo',
-                    date: 'Hoy y siempre',
-                    location: 'Juntos'
-                  }, ...photos]);
-                  setNewPhotoUrl('');
-                  setNewPhotoCaption('');
-                  setIsUploadPhotoOpen(false);
-                }} className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-neutral-700 mb-1">Subir fotos para nuestro album</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          const reader = new FileReader();
-                          reader.onload = () => setNewPhotoUrl(reader.result);
-                          reader.readAsDataURL(file);
-                        }
-                      }}
-                      className="block w-full text-xs text-neutral-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-rose-50 file:text-rose-700"
-                    />
-                  </div>
-                  
-                  {newPhotoUrl && (
-                    <div className="h-32 w-full rounded-lg overflow-hidden border">
-                      <img src={newPhotoUrl} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                    </div>
-                  )}
-                  <input
-                    type="text"
-                    required
-                    value={newPhotoCaption}
-                    onChange={e => setNewPhotoCaption(e.target.value)}
-                    placeholder="Dedicatoria..."
-                    className="w-full rounded-lg border border-neutral-200 p-2 text-xs focus:outline-none"
-                  />
-                  <div className="flex justify-end gap-2 pt-2">
-                    <button type="button" onClick={() => setIsUploadPhotoOpen(false)} className="rounded-lg px-3 py-1.5 text-xs text-neutral-600">Cancelar</button>
-                    <button type="submit" disabled={!newPhotoUrl} className="rounded-lg bg-rose-600 px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-50">Guardar foto</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
-
-
-
-          {/* Lightbox Photo */}
-          {activePhoto && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md" onClick={() => setActivePhoto(null)}>
-              <div className="max-w-3xl w-full bg-white rounded-2xl p-4 shadow-2xl" onClick={e => e.stopPropagation()}>
-                <div className="max-h-[70vh] bg-neutral-950 rounded-xl overflow-hidden flex items-center justify-center">
-                  <img src={activePhoto.url} className="max-h-[70vh] object-contain" />
-                </div>
-                <div className="mt-3 flex justify-between items-center">
-                  <div>
-                    <h3 className="font-romantic text-2xl font-bold text-neutral-900">{activePhoto.caption}</h3>
-                    <p className="text-xs text-neutral-500">{activePhoto.date} · {activePhoto.location}</p>
-                  </div>
-                  <button onClick={() => setActivePhoto(null)} className="rounded-lg bg-neutral-900 px-4 py-2 text-xs text-white">Cerrar</button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Footer */}
-          <footer className="border-t border-rose-100 bg-[#FAF7F5] py-8 px-4 text-center text-xs text-neutral-500 font-light">
-            <p className="font-romantic text-lg font-bold text-neutral-800 mb-1">PARA EL AMOR DE MI VIDA ❤️</p>
-            <p> Espero te guste mi niña linda, se que no estamos tan bien y solo quiero arreglarlo y pues esto es lo mejor que se hacer te amo amor de mi vida, mi futura esposita de verdad te amooo demasiadoo ❤️</p>
-            <p>Hecho con mucho amor para ti mi sam</p>
-          </footer>
         </div>
       );
     }
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
 </body>
 </html>
